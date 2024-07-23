@@ -1,0 +1,25 @@
+{
+    "info": {
+        "name": "Hello World",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "Hello World",
+            "request": {
+                "url": "https://postman-echo.com/post",
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\"message\": \"Hello, World!\"}"
+                }
+            }
+        }
+    ]
+}
