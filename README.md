@@ -1,4 +1,4 @@
-# Data Artifex Foo
+# Data Artifex Postman Toolkit
 
 ...
 
@@ -6,13 +6,13 @@
 ## Installation
  
 ```
-pip install dartfx-foo
+pip install dartfx-postman
 ```
  
 ## Usage
 
 ```
-import dartfx.foo
+from dartfx.postman import <something>
 # do something useful...
 ```
 
