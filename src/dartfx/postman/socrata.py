@@ -1,8 +1,8 @@
 """
 Classes and helpers to publish Socrata data products to Postman collections.
-
 """
 from dataclasses import dataclass, field
+from datetime import datetime
 import json
 import logging
 import os
@@ -120,6 +120,78 @@ class SocrataDataset:
             for index, column in enumerate(self._data["columns"]):
                 self._variables.append(SocrataVariable(self, index))
         return self._variables
+
+    def get_ddi_codebook(self, category_count_threshold=500, codebook_version="2.6"):
+        uid = f"socrata-{self.server.host}-{self.id}"
+        urn = f"urn:socrata:{self.server.host}:{self.id}"
+        xml = f'<codeBook ID="{uid}" ddiCodebookUrn="{urn}" version="{codebook_version}" xmlns="ddi:codebook:{codebook_version}">'
+        # docDscr
+        xml += '<docDscr>'
+        xml += '<prodStmt>'
+        xml += f'<prodDate date="">{datetime.now().isoformat()}</prodDate>'
+        xml += '<software version="0.1.0">Data Artifex - Socrata API</software>'
+        xml += '</prodStmt>'
+        xml += '</docDscr>'
+        # stdyDscr
+        xml += '<stdyDscr>'
+        xml += '<citation>'
+        xml += '<titlStmt>'
+        xml += f'<titl>{self.name}</titl>'
+        xml += f'<IDNo agency="socrata.com">{self.server.host}-{self.id}</IDNo>'
+        xml += '</titlStmt>'
+        xml += '<prodStmt>'
+        xml += '<software>Socrata</software>'
+        xml += '</prodStmt>'
+        xml += '</citation>'
+        xml += '</stdyDscr>'
+        xml += '<stdyInfo>'
+        xml += f'<abstract><![CDATA[{self.description}]]></abstract>'
+        xml += '</stdyInfo>'
+        # fileDscr
+        xml += '<fileDscr ID="F1">'
+        xml += '<fileTxt>'
+        xml += '<fileName>38320-0001-Data.sav</fileName>'
+        xml += '<dimensns>'
+        xml += f'<caseQnty>{self.get_record_count()}</caseQnty>'
+        xml += f'<varQnty>{self.get_variable_count()}</varQnty>'
+        xml += '</dimensns>'
+        xml += '<fileType>socrata</fileType>'
+        xml += '</fileTxt>'
+        xml += '</fileDscr>'
+        # dataDscr
+        xml += '<dataDscr>'
+        for var in self.variables:
+            if var.is_hidden:
+                continue
+            xml += f'<var ID="V{var.id}" name="{var.name}" files="F1">'
+            xml += f'<labl>{var.label}</labl>'
+            if var.socrata_data_type == 'number':
+                type = 'number'
+            else:
+                type = 'character'
+            xml += f'<varFormat type="{type}" schema="other" formatname="socrata">{var.socrata_data_type}</varFormat>'
+            if var.cached_content:
+                # summary statistics
+                cardinality = int(var.cached_content.get('cardinality'))
+                xml += f'<sumStat type="count">{var.cached_content.get("count")}</sumStat>'
+                xml += f'<sumStat type="min">{var.cached_content.get("smallest")}</sumStat>'
+                xml += f'<sumStat type="max">{var.cached_content.get("largest")}</sumStat>'
+                xml += f'<sumStat type="other" otherType="cardinality">{var.cached_content.get("cardinality")}</sumStat>'
+                xml += f'<sumStat type="vald">{var.cached_content.get("non_null")}</sumStat>'
+                xml += f'<sumStat type="invd">{var.cached_content.get("null")}</sumStat>'
+                top = var.cached_content.get('top')
+                if top and cardinality <=  category_count_threshold:
+                    for item in top:
+                        xml += '<catgry>'
+                        xml += f'<catValu>{item["item"]}</catValu>'
+                        xml += f'<labl>{item["item"]}</labl>' # Socrata does not provide category labels. Use code value.
+                        xml += f'<catStat type="count">{item["count"]}</catStat>'
+                        xml += '</catgry>'                    
+                    xml += '<notes type="dartfx" subject="categorical-variables">Be wary that Socrata does not provide category labels and by default only lists information on the top 10 most used codes. The DDI var/catgry set may therefore be incomplete.</notes>'                
+            xml += '</var>'
+        xml += '</dataDscr>'
+        xml += '</codeBook>'
+        return xml
 
     def get_variable_count(self, exclude_hidden=True, exclude_deleted=True, exclude_computed=True) -> int:
         count = 0
