@@ -14,7 +14,7 @@ def main():
     #workspace = postman.WorkspaceManager(args.workspace_id, api)
     if not args.collection_id:
         #collection_id = workspace.create_collection(f'🔢 Data Product 101 {datetime.now().isoformat()[:19]}', 'https://schema.getpostman.com/json/collection/v2.1.0/collection.json')
-        collection = postman.DataProductCollectionManager.create(api, args.workspace_id, f'🔢 Ipsum Lorem {datetime.now().isoformat()[:19]}')
+        collection = postman.DataProductCollectionManager.factory(api, args.workspace_id, f'🔢 Ipsum Lorem {datetime.now().isoformat()[:19]}')
     else:
         collection_id = args.collection_id
         collection = postman.DataProductCollectionManager(api, collection_id)

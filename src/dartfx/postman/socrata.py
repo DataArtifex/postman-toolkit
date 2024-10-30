@@ -2,289 +2,10 @@
 Classes and helpers to publish Socrata data products to Postman collections.
 """
 from dataclasses import dataclass, field
-from datetime import datetime
-import json
-import logging
-import os
-import requests
-from typing import Optional
 
 from dartfx.postman import postman
 from dartfx.postman import postman_collection
-
-
-class SocrataApiError(Exception):
-    """Custom exception for Socrata API errors."""
-
-    def __init__(self, message, url, status_code=None, response=None):
-        super().__init__(message)
-        self.message = message
-        self.url = url
-        self.status_code = status_code
-        self.response = response
-
-    def __str__(self):
-        base_message = f"SocrataApiError: {self.message}"
-        if self.status_code is not None:
-            base_message += f" (Status Code: {self.status_code})"
-        if self.response is not None:
-            base_message += f" (Response: {self.response})"
-        return base_message
-
-
-@dataclass
-class SocrataServer:
-    host: str
-    disk_cache_root: Optional[str] = field(default=None)
-    in_memory_cache: dict = field(default_factory=dict, init=False, repr=False)
-
-    def __post_init__(self):
-        self.memory_cache = {}
-
-    @property
-    def disk_cache_dir(self):
-        if self.disk_cache_root:
-            if os.path.isdir(self.disk_cache_root):
-                if self.disk_cache_root:
-                    path = os.path.join(self.disk_cache_root, self.host)
-                    os.makedirs(path, exist_ok=True)
-                    return path
-            else:
-                raise ValueError(f"Cache root directory does not exist: {self.disk_cache_root}")
-
-    def get_dataset_info(self, dataset_id, refresh=False):
-        # check if in memory cache
-        if dataset_id in self.memory_cache and not refresh:
-            return self.memory_cache[dataset_id]
-        # init local file if cache is enabled
-        file_name = f"{dataset_id}.json"
-        if self.disk_cache_dir:
-            file_path = os.path.join(self.disk_cache_dir, file_name)
-        if self.disk_cache_dir and os.path.isfile(file_path) and not refresh:
-            # load from disk cache
-            logging.debug(f"Loading from disk cache {file_path}")
-            with open(file_path) as f:
-                data = json.load(f)
-                self.memory_cache[dataset_id] = data
-                return data
-        else:
-            # retrieve from server
-            url = f"https://{self.host}/api/views/{file_name}"
-            logging.debug(f"GET {url}")
-            r = requests.get(url)
-            if r.status_code == 200:
-                data = r.json()
-                # save to disk cache if enabled
-                if self.disk_cache_dir: # save to local cache if enabled
-                    with open(file_path, 'w') as f:
-                        json.dump(data, f, indent=4)
-                # save to in memory cache
-                self.memory_cache[dataset_id] = data
-                return data
-            else:
-                raise SocrataApiError("Error getting dataset info", url, r.status_code, r.text)
-
-@dataclass
-class SocrataDataset:
-    server: SocrataServer
-    id: str
-    _data: dict = field(init=False, repr=False)
-    _variables: list["SocrataVariable"] = field(init=False, repr=False, default_factory=list)
-
-    def __post_init__(self):
-        self._data = self.server.get_dataset_info(self.id)
-        if self.asset_type != 'dataset':
-            raise ValueError(f"Unexpected asset type: {self.asset_type}. Must be 'dataset'.")
-
-    @property   
-    def data(self):
-        return self._data
-
-
-    @property
-    def asset_type(self):
-        return self._data.get("assetType")
-
-    @property
-    def description(self):
-        return self._data.get("description")
-
-    @property
-    def name(self):
-        return self._data.get("name")
-    
-    @property
-    def variables(self) -> list["SocrataVariable"]:
-        if not self._variables:
-            self._variables = []
-            for index, column in enumerate(self._data["columns"]):
-                self._variables.append(SocrataVariable(self, index))
-        return self._variables
-
-    def get_ddi_codebook(self, category_count_threshold=500, codebook_version="2.6"):
-        uid = f"socrata-{self.server.host}-{self.id}"
-        urn = f"urn:socrata:{self.server.host}:{self.id}"
-        xml = f'<codeBook ID="{uid}" ddiCodebookUrn="{urn}" version="{codebook_version}" xmlns="ddi:codebook:{codebook_version}">'
-        # docDscr
-        xml += '<docDscr>'
-        xml += '<prodStmt>'
-        xml += f'<prodDate date="">{datetime.now().isoformat()}</prodDate>'
-        xml += '<software version="0.1.0">Data Artifex - Socrata API</software>'
-        xml += '</prodStmt>'
-        xml += '</docDscr>'
-        # stdyDscr
-        xml += '<stdyDscr>'
-        xml += '<citation>'
-        xml += '<titlStmt>'
-        xml += f'<titl>{self.name}</titl>'
-        xml += f'<IDNo agency="socrata.com">{self.server.host}-{self.id}</IDNo>'
-        xml += '</titlStmt>'
-        xml += '<prodStmt>'
-        xml += '<software>Socrata</software>'
-        xml += '</prodStmt>'
-        xml += '</citation>'
-        xml += '</stdyDscr>'
-        xml += '<stdyInfo>'
-        xml += f'<abstract><![CDATA[{self.description}]]></abstract>'
-        xml += '</stdyInfo>'
-        # fileDscr
-        xml += '<fileDscr ID="F1">'
-        xml += '<fileTxt>'
-        xml += '<fileName>38320-0001-Data.sav</fileName>'
-        xml += '<dimensns>'
-        xml += f'<caseQnty>{self.get_record_count()}</caseQnty>'
-        xml += f'<varQnty>{self.get_variable_count()}</varQnty>'
-        xml += '</dimensns>'
-        xml += '<fileType>socrata</fileType>'
-        xml += '</fileTxt>'
-        xml += '</fileDscr>'
-        # dataDscr
-        xml += '<dataDscr>'
-        for var in self.variables:
-            if var.is_hidden:
-                continue
-            xml += f'<var ID="V{var.id}" name="{var.name}" files="F1">'
-            xml += f'<labl>{var.label}</labl>'
-            if var.socrata_data_type == 'number':
-                type = 'number'
-            else:
-                type = 'character'
-            xml += f'<varFormat type="{type}" schema="other" formatname="socrata">{var.socrata_data_type}</varFormat>'
-            if var.cached_content:
-                # summary statistics
-                cardinality = int(var.cached_content.get('cardinality'))
-                xml += f'<sumStat type="count">{var.cached_content.get("count")}</sumStat>'
-                xml += f'<sumStat type="min">{var.cached_content.get("smallest")}</sumStat>'
-                xml += f'<sumStat type="max">{var.cached_content.get("largest")}</sumStat>'
-                xml += f'<sumStat type="other" otherType="cardinality">{var.cached_content.get("cardinality")}</sumStat>'
-                xml += f'<sumStat type="vald">{var.cached_content.get("non_null")}</sumStat>'
-                xml += f'<sumStat type="invd">{var.cached_content.get("null")}</sumStat>'
-                top = var.cached_content.get('top')
-                if top and cardinality <=  category_count_threshold:
-                    for item in top:
-                        xml += '<catgry>'
-                        xml += f'<catValu>{item["item"]}</catValu>'
-                        xml += f'<labl>{item["item"]}</labl>' # Socrata does not provide category labels. Use code value.
-                        xml += f'<catStat type="count">{item["count"]}</catStat>'
-                        xml += '</catgry>'                    
-                    xml += '<notes type="dartfx" subject="categorical-variables">Be wary that Socrata does not provide category labels and by default only lists information on the top 10 most used codes. The DDI var/catgry set may therefore be incomplete.</notes>'                
-            xml += '</var>'
-        xml += '</dataDscr>'
-        xml += '</codeBook>'
-        return xml
-
-    def get_variable_count(self, exclude_hidden=True, exclude_deleted=True, exclude_computed=True) -> int:
-        count = 0
-        for variable in self.variables:
-            if variable.is_hidden and exclude_hidden:
-                continue
-            else:
-                if variable.is_deleted and exclude_deleted:
-                    continue
-                if variable.is_computed and exclude_computed:
-                    continue
-            count += 1
-        return count
-    
-    def get_record_count(self):
-        count = self.data["columns"][0]["cachedContents"]["count"]
-        return count
-
-@dataclass
-class SocrataVariable:
-    """Helper class to process/use Socarata dataset variables (columns).
-
-    This uses a standard terminology and hides Socrata properietary attribute names.
-
-    """
-    dataset: SocrataDataset
-    index: int
-
-    def __post_init__(self):
-        pass
-
-    @property
-    def cached_content(self):
-        return self.data.get('cachedContents')
-
-    @property
-    def data(self):
-        return self.dataset._data["columns"][self.index]
-
-    @property
-    def id(self):
-        """The variable is which is always a number"""
-        return self.data["id"]
-
-    @property
-    def is_computed(self):
-        """The name, which is the 'filedname' property, starts with ':@computed'"""
-        return self.name.startswith(":@computed")
-
-    @property
-    def is_deleted(self):
-        """The label, which is the 'name' property, starts with 'DELETE -'"""
-        return self.label.startswith("DELETE -")
-
-    @property
-    def is_hidden(self):
-        """Is either computed or deleted"""
-        return self.is_computed or self.is_deleted
-
-    @property
-    def is_visible(self):
-        """Not hdden"""
-        return not self.is_hidden
-
-    @property
-    def label(self):
-        # Note that the 'name' property is actually the variable label
-        # Be aware that variables marked for deletion, that are hidden from users, have a 'name' that starts with 'DELETE -'
-        return self.data["name"]
-
-    @property
-    def name(self):
-        # Note that the 'filedName' property is actually the variable name
-        # Be aware that compute variables, that are hidden from users, start with :@computed
-        return self.data["fieldName"]
-
-    @property
-    def position(self):
-        return self.data["position"]
-
-    @property
-    def socrata_data_type(self):
-        return self.data["dataTypeName"]
-
-    @property
-    def generic_data_type(self):
-        #TODO: implement
-        return None
-        
-    @property
-    def socrata_render_type(self):
-        return self.data["renderTypeName"]
-
+from dartfx.socrata import SocrataServer, SocrataDataset
 
 @dataclass
 class PostmanPublisherConfig():
@@ -319,7 +40,7 @@ class SocrataPostmanPublisher():
         # instantiate collection manager
         if target_type == "workspace":
             # create a new collection
-            collection_manager = postman.DataProductCollectionManager.create(self._postman_api, target_id, dataset.id, dartfx_id=f'socrata:{dataset.server.host}:{dataset.id}')
+            collection_manager = postman.DataProductCollectionManager.factory(self._postman_api, target_id, dataset.id, dartfx_id=f'socrata:{dataset.server.host}:{dataset.id}')
         elif target_type == "collection":
             # use existing collection
             collection_manager = postman.DataProductCollectionManager(self._postman_api, target_id)
@@ -355,6 +76,20 @@ class PostmanCollectionGenerator():
         self.dataset = dataset
         self.config = config
 
+    def _add_query_request_parameters(self, request: postman_collection.Request):
+        request.url.create_query_parameter('$select',description="The set of columns to be returned, similar to a SELECT in SQL. Default: All columns, equivalent to $select=*.", disabled=True)
+        request.url.create_query_parameter('$where',None, "Filters the rows to be returned, similar to WHERE. No default value.", True)
+        request.url.create_query_parameter('$order',None, "Column to order results on, similar to ORDER BY in SQL. Default is unspecified order.", True)
+        request.url.create_query_parameter('$group',None, "Column to group results on, similar to GROUP BY in SQL. Default is no grouping.", True)
+        request.url.create_query_parameter('$having',None, "Filters the rows that result from an aggregation, similar to HAVING. Default is no filter.", True)
+        request.url.create_query_parameter('$limit',None, "Maximum number of results to return. Default is 1,000. Maximum is 50,000).", True)
+        request.url.create_query_parameter('$offset',None, "Offset count into the results to start at, used for paging. Default is 0.", True)
+        request.url.create_query_parameter('$q',None, "Performs a full text search for a value. Default is no search.", True)
+        request.url.create_query_parameter('$query',None, "A full SoQL query string, all as one parameter.", True)
+        request.url.create_query_parameter('$bom',None, "Prepends a UTF-8 Byte Order Mark to the beginning of CSV output. Default is False", True)
+        return
+        
+
     def generate(self) -> postman_collection.Collection:
         collection = postman_collection.Collection()
         dataset = self.dataset
@@ -374,26 +109,145 @@ class PostmanCollectionGenerator():
             description = f"## Description\n{dataset.description}\n"
         collection.info.description = description
 
-        # Query Data Request
-        item = postman_collection.Item()
-        item.name = "Query Data"
-        request = item.create_request(f"https://{dataset.server.host}/resource/{dataset.id}.json")
-        item.request = request
-        # request paraneters
-        request.url.create_query_parameter('$select',description="The set of columns to be returned, similar to a SELECT in SQL. Default: All columns, equivalent to $select=*.", disabled=True)
-        request.url.create_query_parameter('$where',None, "Filters the rows to be returned, similar to WHERE. No default value.", True)
-        request.url.create_query_parameter('$order',None, "Column to order results on, similar to ORDER BY in SQL. Default is unspecified order.", True)
-        request.url.create_query_parameter('$group',None, "Column to group results on, similar to GROUP BY in SQL. Default is no grouping.", True)
-        request.url.create_query_parameter('$having',None, "Filters the rows that result from an aggregation, similar to HAVING. Default is no filter.", True)
-        request.url.create_query_parameter('$limit',None, "Maximum number of results to return. Default is 1,000. Maximum is 50,000).", True)
-        request.url.create_query_parameter('$offset',None, "Offset count into the results to start at, used for paging. Default is 0.", True)
-        request.url.create_query_parameter('$q',None, "Performs a full text search for a value. Default is no search.", True)
-        request.url.create_query_parameter('$query',None, "A full SoQL query string, all as one parameter.", True)
-        request.url.create_query_parameter('$$bom',None, "Prepends a UTF-8 Byte Order Mark to the beginning of CSV output. Default is False", True)
-        collection.item.append(item)
+        # Metadata Folder
+        metadata_folder = postman_collection.ItemGroup()
+        metadata_folder.name = "Metadata"
+        metadata_folder.description  = "Machine actionable knowledge around data (metadata) plays a fundamental role in data science, machine learning, and data governance. "
+        metadata_folder.description += "Requests in this folder provide information about the dataset based on the following standards:"
+        metadata_folder.description += "\n- [Croissant](https://mlcommons.org/working-groups/data/croissant/): a rapidly emerging specification for machine learning and AI"
+        metadata_folder.description += "\n- [DCAT](https://www.w3.org/TR/vocab-dcat-3/): the W3C Data Catalog Vocabulary"
+        metadata_folder.description += "\n- [DDI-C](https://ddialliance.org/Specification/DDI-Codebook/2.5/): the DDI Alliance light-weight XML based Codebook specification"
+        metadata_folder.description += "\n- [DDI-CDI](https://ddialliance.org/Specification/ddi-cdi): the DDI Alliance latest RDF based Cross-Domain Integration specification"
+        metadata_folder.description += "\n"
+        metadata_folder.description += "\nThese standards and related best practices support the [FAIR principles](https://www.go-fair.org/fair-principles/) and the [Cross-Domain Interoperability Framework](https://cdif.codata.org/)."
+        metadata_folder.description += " The APIs endpoints are hosted by the [High-Value Data Network](https://www.highvaluedata.net)"
+        collection.item.append(metadata_folder)
+        
+        base_url = f"https://highvaluedata.net/api/datasets/socrata:{dataset.server.host}:{dataset.id}"
 
-        # variables
+        # Croissant request
+        item = postman_collection.Item()
+        item.name = "Croissant"
+        item.create_request(f"{base_url}/croissant")
+        item.request.url.create_query_parameter('format', description="The serialization format.", disabled=True)
+        item.request.description  = "## Croissant"
+        item.request.description += "\nFor more infornation, visit https://mlcommons.org/working-groups/data/croissant/ and https://github.com/mlcommons/croissant"
+        metadata_folder.item.append(item)
+
+
+        # DCAT request
+        item = postman_collection.Item()
+        item.name = "DCAT W3C (JSON-LD)"
+        item.create_request(f"{base_url}/dcat")
+        item.request.url.create_query_parameter('format', description="The serialization format.", disabled=True)
+        item.request.description = "## DCAT"
+        item.request.description += "\nFor more infornation, visit https://www.w3.org/TR/vocab-dcat-3/"
+        metadata_folder.item.append(item)
+
+        # DCAT request
+        item = postman_collection.Item()
+        item.name = "DCAT W3C (Turtle)"
+        item.create_request(f"{base_url}/dcat")
+        item.request.url.create_query_parameter('format', value='ttl', description="The serialization format.")
+        item.request.description = "## DCAT"
+        item.request.description += "\nFor more infornation, visit https://www.w3.org/TR/vocab-dcat-3/"
+        metadata_folder.item.append(item)
+                
+        # DDI-Codebook request
+        item = postman_collection.Item()
+        item.name = "DDI-Codebook"
+        item.create_request(f"{base_url}/ddi/codebook")
+        item.request.description = "## DDI Codebook"
+        item.request.description += "\nDDI-Codebook (Data Documentation Initiative Codebook), also known as DDI version 2, is a metadata standard designed for describing simple survey data for exchange or archiving in the social, behavioral, and economic sciences. It's an XML-based specification that provides a structured format for documenting various aspects of research data, including variables, coding schemes, methodology, and other relevant information. DDI-Codebook is simpler compared to its counterpart DDI-Lifecycle (version 3), making it suitable for straightforward data documentation needs. It allows researchers and data archivists to create standardized, machine-readable metadata that facilitates data discovery, understanding, and reuse across different research projects and institutions[1][3]."
+        item.request.description += "\nFor more information, visit https://ddialliance.org/Specification/DDI-Codebook/2.5/"
+        metadata_folder.item.append(item)
+
+        # DDI-CDI CDIF request
+        item = postman_collection.Item()
+        item.name = "DDI-CDI CDIF (JSON-LD)"
+        item.create_request(f"{base_url}/ddi/cdif")
+        item.request.description = "## DDI-CDI CDIF"
+        item.request.description += "\nFor more information, visit  https://cdif.codata.org/"
+        metadata_folder.item.append(item)
+
+        # DDI-CDI CDIF request
+        item = postman_collection.Item()
+        item.name = "DDI-CDI CDIF (Turtle)"
+        item.description = """
+        <TODO
+        For more information, visit https://cdif.codata.org/
+        """
+        item.create_request(f"{base_url}/ddi/cdif")
+        item.request.url.create_query_parameter('format', value='ttl', description="The serialization format.")
+        item.request.description = "## DDI-CDI CDIF"
+        item.request.description += "\nFor more information, visit  https://cdif.codata.org/"
+        metadata_folder.item.append(item)
+
+        # DATA FOLDER
+        data_folder = postman_collection.ItemGroup()
+        data_folder.name = "Data"
+        data_folder.description  = "This folder contains request to query the dataset using the host platform API."
+        collection.item.append(data_folder)
+
+        # Query Data Request (JSON)
+        item = postman_collection.Item()
+        item.name = "Query Data (JSON)"
+        item.request = item.create_request(f"https://{dataset.server.host}/resource/{dataset.id}.json")
+        self._add_query_request_parameters(item.request)
+        data_folder.item.append(item)
+
+        # Query Data Request (CSV)
+        item = postman_collection.Item()
+        item.name = "Query Data (CSV)"
+        item.request = item.create_request(f"https://{dataset.server.host}/resource/{dataset.id}.csv")
+        self._add_query_request_parameters(item.request)
+        data_folder.item.append(item)
+
+        # CODE FOLDER
+        code_folder = postman_collection.ItemGroup()
+        code_folder.name = "Code"
+        code_folder.description  = "This folder contains requests to bootstrap code for accessing the datasets from various development environment."
+        collection.item.append(code_folder)
+
+        languages = [
+            {"name": "JQuery", "path": "jquery"},
+            {"name": "Python Pandas", "path": "python-pandas"},
+            {"name": "Powershell", "path": "powershell"},
+            {"name": "R Socrata", "path": "r-socrata"},
+            {"name": "SAS", "path": "sas"},
+            {"name": "SODA Ruby", "path": "soda-ruby"},
+            {"name": "SODA .NET", "path": "soda-dotnet"},
+            {"name": "Stata", "path": "stata"},
+        ]
+
+        for language in languages:
+            item = postman_collection.Item()
+            item.name = language["name"]
+            item.create_request(f"{base_url}/code/{language['path']}")
+            self._add_query_request_parameters(item.request)
+            code_folder.item.append(item)
+
+        # SQL FOLDER
+        sql_folder = postman_collection.ItemGroup()
+        sql_folder.name = "SQL"
+        sql_folder.description  = "This folder contains requests to generate SQL code for loading the dataset in various database environments."
+        collection.item.append(sql_folder)
+
+
+        # AI FOLDER
+        ai_folder = postman_collection.ItemGroup()
+        ai_folder.name = "AI"
+        metadata_folder.description  = "This folder contains requests to facilitate integration of the dataset wwith various AI tools."
+        collection.item.append(ai_folder)
+
+        # VISUALIZATION FOLDER
+        dv_folder = postman_collection.ItemGroup()
+        dv_folder.name = "Visualization"
+        metadata_folder.description  = "This folder contains requests to facilitate the visualization of the dataset."
+        collection.item.append(dv_folder)
+
+        # COLLECTION VARIABLES
         collection.variable = []
-        collection.variable.append(postman_collection.Variable(id="socrata_id", value=dataset.id))
+        collection.variable.append(postman_collection.Variable(id="socrataId", value=dataset.id))
 
         return collection

@@ -198,6 +198,27 @@ class PostmanApi:
         data = response.json()
         return data["collection"]["id"]
 
+    def replace_collection(self, collection_id:str, collection: dict) -> str:
+        """Replaces a Postman collection from a populated dictionary
+
+        Args:
+            workspace_id (str): The ID of the workspace
+            collection_id (str): The ID of the collection
+            collection (dict): The collection data
+
+        Returns:
+            str: _description_
+        """
+        data = {"collection": collection}
+        response = self.put_request(
+            f"collections/{collection_id}",
+            f"Replace collection {collection_id}",
+            json=data,
+        )
+        data = response.json()
+        return data["collection"]["id"]
+
+
     #
     # FOLDERS
     #
@@ -242,7 +263,7 @@ class PostmanApi:
         uid = folder_data["data"]["owner"]+'-'+folder_data["data"]["id"]
         return uid
 
-    def get_folder(self, collection_id, id) -> dict:
+    def get_folder(self, collection_id, folder_id) -> dict:
         """Get a folder in a collection
 
         Args:
@@ -256,8 +277,8 @@ class PostmanApi:
             dict: The folder data
         """
         response = self.get_request(
-            f"collections/{collection_id}/folders/{id}",
-            f"Get folder {id} in collection {collection_id}",
+            f"collections/{collection_id}/folders/{folder_id}",
+            f"Get folder {folder_id} in collection {collection_id}",
         )
         data = response.json()
         return data
@@ -838,13 +859,16 @@ class CollectionManager:
 
 
 class DataProductCollectionManager(CollectionManager):
-    """Helper to interact with a Postman collection specializing for data"""
+    """Helper to interact with a Postman collection specializing in data.
+    
+    
+    """
 
     _dartfx_variable_name: str
     _dartfx_data: dict
 
     @classmethod
-    def create(
+    def factory(
         cls,
         api: PostmanApi,
         workspace_id: str,
@@ -897,7 +921,39 @@ class DataProductCollectionManager(CollectionManager):
 
     def get_registered_folder(self, id: str):
         pass
-
-
+    
+    
 class Foldermanager:
-    pass
+    """Helper to interact with an existing Postman folder"""
+
+    _id: str  # Postman folder id
+    _collection_id: str  # Postman collection id
+    _api: str  # API object
+    _data: dict  # the underlying Postman JSON object
+    _updated_at: datetime  # local update timestamp
+    _tags: list[str]  # the collection tags as an array (enterprise only)
+
+    def __init__(self, api: PostmanApi, collection_id: str, folder_id, refresh=True):
+        self.collection_id = collection_id
+        self._id = folder_id
+        self._api = api
+        self._data = None
+        self._updated_at = None
+        if refresh:
+            self.refresh_data()
+
+    @property
+    def data(self) -> dict:
+        if self._data is None:
+            self.refresh_data()
+        return self._data
+
+    def refresh_data(self):
+        """Refreshes the cached collection data from the API"""
+        data = self.get_collection()
+        self._data = data["collection"]
+
+
+    def create_folder(self, name: str, description: str = None, ):
+        return self._api.create_folder(self._id, name, description, self.id)
+

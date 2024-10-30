@@ -1,17 +1,12 @@
-from dartfx.apipublisher import mtnards
-from dartfx.postman import postman
-
-class MtnaRdsServer(mtnards.MtnaRdsServer):
-    """A convenience proxy to the Data Artifex API Publisher class"""
-    def __init__(self, host=None, base_path="rds", api_path="api", api_key=None, ssl_verify=True) -> None:
-        super().__init__(host=host, base_path=base_path, api_path=api_path, api_key=api_key, ssl_verify=ssl_verify)
+from dartfx.mtnards import MtnaRdsServer
+from .postman import PostmanApi
 
 class MtnaRdsPostmanPublisher():
-    _rds_server: mtnards.MtnaRdsServer
-    _postman_api: postman.PostmanApi
+    _rds_server: MtnaRdsServer
+    _postman_api: PostmanApi
     _temp_workspace_id: str = None # if set can be used for importing temporary collections
 
-    def __init__(self, api: postman.PostmanApi, rds_server: mtnards.MtnaRdsServer, temp_workspace_id=None):
+    def __init__(self, api: PostmanApi, rds_server: MtnaRdsServer, temp_workspace_id=None):
         self._postman_api = api
         self._rds_server = rds_server
         self._temp_workspace_id = temp_workspace_id

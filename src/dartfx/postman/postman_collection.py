@@ -419,6 +419,7 @@ class Collection(CollectionResource):
     variable: list['Variable'] = None
     auth: 'Auth' = None
     protocolProfileBehavior: object = None
+    _postman_id: str = None
 
     def __post_init__(self):
         if not self.info: 
@@ -528,7 +529,7 @@ class ItemGroup(CollectionResource): # item-group in JSON schema
     name: str = None
     description: 'Description' | str = None
     variable: list['Variable'] = None
-    item: list['Item'] = None
+    item: list['Item'] = field(default_factory=list)
     event: list['Event'] = None
     auth: 'Auth' = None
     protocolProfileBehavior: object = None    
