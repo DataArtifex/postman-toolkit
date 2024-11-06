@@ -597,11 +597,8 @@ class WorkspaceManager:
         """The Postman API object associated with this workspace"""
         return self._api
 
-    def create_collection(
-        self,
-        name,
-        collectionSchemaUrl="https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    ):
+
+    def create_collection(self, name, collectionSchemaUrl="https://schema.getpostman.com/json/collection/v2.1.0/collection.json"):
         """Helper to create a collection for this workspace."""
         return self.postman_api.create_collection(self.id, name, collectionSchemaUrl)
 

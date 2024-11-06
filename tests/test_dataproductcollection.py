@@ -11,7 +11,7 @@ def get_api() -> postman.PostmanApi:
 
 @cache
 def get_workspace(id="194dd33d-438d-47e1-ae69-e2ab5b414beb") -> postman.WorkspaceManager:
-    ws = postman.WorkspaceManager(id, get_api())
+    ws = postman.WorkspaceManager(get_api(), id)
     return ws
 
 def test_create_dataproduct_101():

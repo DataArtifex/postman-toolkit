@@ -268,7 +268,7 @@ class PostmanCollectionGenerator():
         # AI FOLDER
         ai_folder = postman_collection.ItemGroup()
         ai_folder.name = "AI"
-        ai_folder.description  = "This folder contains requests to facilitate integration of the dataset wwith various AI tools."
+        ai_folder.description  = "This folder contains requests to facilitate integration of the dataset with various AI platforms."
         collection.item.append(ai_folder)
 
         # VISUALIZATION FOLDER
