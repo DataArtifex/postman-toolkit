@@ -1,13 +1,13 @@
 {
     "info": {
-        "name": "\ud83d\udd22 311 Cases [vw6y-z8j6]",
-        "description": "## Description\n<strong>SUMMARY</strong>\nDataset contains SF311 cases created since 7/1/2008 with location information. \n\n<strong>UPDATE PROCESS</strong>\nThis dataset updates daily.\n\n<strong>HOW TO USE THIS DATASET</strong>\nDownload data using 'export' button to the right. For more information on this dataset, visit the  <u><a href=\"https://sfdigitalservices.gitbook.io/dataset-explainers/311-cases\">FAQ page</a></u>.\n\n<strong>Want to map the data in your neighborhood?</strong> \nCheck out https://sf.connect.socrata.com/\n\nFor more information about Open311, see http://www.open311.org/.\n",
+        "name": "\ud83d\udd22 Air Traffic Passenger Statistics [rkru-6vcg]",
+        "description": "## Description\n<strong>A. SUMMARY</strong>\nSan Francisco International Airport Report on Monthly Passenger Traffic Statistics by Airline.\n \n<strong>B. HOW THE DATASET IS CREATED</strong>\nData is self-reported by airlines and is only available at a monthly level\n \n<strong>C. UPDATE PROCESS</strong>\nData updated quarterly\n \n<strong>D. HOW TO USE THIS DATASET</strong>\nAirport data is seasonal in nature, therefore any comparative analyses should be done on a period-over-period basis (i.e. January 2010 vs. January 2009) as opposed to period-to-period (i.e. January 2010 vs. February 2010). It is also important to note that fact and attribute field relationships are not always 1-to-1. For example, Passenger Counts belonging to United Airlines will appear in multiple attribute fields and are additive, which provides flexibility for the user to derive categorical Passenger Counts as desired.\n",
         "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
     },
     "item": [
         {
             "name": "Metadata",
-            "description": "This folder contains requests to facilitate the visualization of the dataset.",
+            "description": "Metadata is essential for creating machine-actionable insights that drive automation, machine learning, and efficient data governance. High-quality metadata reduces the burden of data wrangling, facilitating faster, more reliable insights and enabling seamless integration of datasets across platforms. The requests in this folder deliver structured metadata adhering to the following industry standards:\n- [Croissant](https://mlcommons.org/working-groups/data/croissant/): a leading-edge specification designed to enhance machine learning and AI workflows through standardized metadata practices\n- [DCAT](https://www.w3.org/TR/vocab-dcat-3/): the W3C's Data Catalog Vocabulary, widely used for data discovery and cataloging in open data ecosystems\n- [DDI-C](https://ddialliance.org/Specification/DDI-Codebook/2.5/): a lightweight XML-based codebook specification from the DDI Alliance that supports efficient metadata management for social, behavioral, and economic sciences\n- [DDI-CDI](https://ddialliance.org/Specification/ddi-cdi): the latest RDF-based Cross-Domain Integration specification from the DDI Alliance, enabling metadata interoperability across diverse domains\n\nBy leveraging these standards, along with best practices, this folder supports the [FAIR principles](https://www.go-fair.org/fair-principles/) (Findable, Accessible, Interoperable, and Reusable data) and the [Cross-Domain Interoperability Framework](https://cdif.codata.org/). The API endpoints are hosted by the [High-Value Data Network](https://www.highvaluedata.net) to facilitate broad, cross-functional data utility.",
             "item": [
                 {
                     "name": "Croissant",
@@ -18,7 +18,7 @@
                             "path": [
                                 "api",
                                 "datasets",
-                                "socrata:data.sfgov.org:vw6y-z8j6",
+                                "socrata:data.sfgov.org:rkru-6vcg",
                                 "croissant"
                             ],
                             "query": [
@@ -30,7 +30,7 @@
                             ]
                         },
                         "method": "GET",
-                        "description": "## Croissant\nFor more infornation, visit https://mlcommons.org/working-groups/data/croissant/ and https://github.com/mlcommons/croissant"
+                        "description": "## Croissant\nReturn the dataset metadata based on the MLCommons Croissant specification.\nFor more infornation, visit https://mlcommons.org/working-groups/data/croissant/ and https://github.com/mlcommons/croissant"
                     }
                 },
                 {
@@ -42,7 +42,7 @@
                             "path": [
                                 "api",
                                 "datasets",
-                                "socrata:data.sfgov.org:vw6y-z8j6",
+                                "socrata:data.sfgov.org:rkru-6vcg",
                                 "dcat"
                             ],
                             "query": [
@@ -54,7 +54,7 @@
                             ]
                         },
                         "method": "GET",
-                        "description": "## DCAT\nFor more infornation, visit https://www.w3.org/TR/vocab-dcat-3/"
+                        "description": "## DCAT (JSON-LD)\nReturn the dataset metadata based on the W3C Data Catalog standard..\nFor more infornation, visit https://www.w3.org/TR/vocab-dcat-3/"
                     }
                 },
                 {
@@ -66,7 +66,7 @@
                             "path": [
                                 "api",
                                 "datasets",
-                                "socrata:data.sfgov.org:vw6y-z8j6",
+                                "socrata:data.sfgov.org:rkru-6vcg",
                                 "dcat"
                             ],
                             "query": [
@@ -90,7 +90,7 @@
                             "path": [
                                 "api",
                                 "datasets",
-                                "socrata:data.sfgov.org:vw6y-z8j6",
+                                "socrata:data.sfgov.org:rkru-6vcg",
                                 "ddi",
                                 "codebook"
                             ]
@@ -108,7 +108,7 @@
                             "path": [
                                 "api",
                                 "datasets",
-                                "socrata:data.sfgov.org:vw6y-z8j6",
+                                "socrata:data.sfgov.org:rkru-6vcg",
                                 "ddi",
                                 "cdif"
                             ]
@@ -127,7 +127,7 @@
                             "path": [
                                 "api",
                                 "datasets",
-                                "socrata:data.sfgov.org:vw6y-z8j6",
+                                "socrata:data.sfgov.org:rkru-6vcg",
                                 "ddi",
                                 "cdif"
                             ],
@@ -157,7 +157,7 @@
                             "host": "data.sfgov.org",
                             "path": [
                                 "resource",
-                                "vw6y-z8j6.json"
+                                "rkru-6vcg.json"
                             ],
                             "query": [
                                 {
@@ -223,7 +223,7 @@
                             "host": "data.sfgov.org",
                             "path": [
                                 "resource",
-                                "vw6y-z8j6.csv"
+                                "rkru-6vcg.csv"
                             ],
                             "query": [
                                 {
@@ -284,8 +284,8 @@
             ]
         },
         {
-            "name": "Code",
-            "description": "This folder contains requests to bootstrap code for accessing the datasets from various development environment.",
+            "name": "Code Snippets",
+            "description": "This folder provides API requests that generate code snippets designed to streamline development and data science workflows. By offering reusable, customizable code samples, this collection helps developers and data scientists to quickly implement standard tasks, reduce boilerplate code, and improve productivity across projects..",
             "item": [
                 {
                     "name": "JQuery",
@@ -296,7 +296,7 @@
                             "path": [
                                 "api",
                                 "datasets",
-                                "socrata:data.sfgov.org:vw6y-z8j6",
+                                "socrata:data.sfgov.org:rkru-6vcg",
                                 "code",
                                 "jquery"
                             ],
@@ -365,7 +365,7 @@
                             "path": [
                                 "api",
                                 "datasets",
-                                "socrata:data.sfgov.org:vw6y-z8j6",
+                                "socrata:data.sfgov.org:rkru-6vcg",
                                 "code",
                                 "python-pandas"
                             ],
@@ -434,7 +434,7 @@
                             "path": [
                                 "api",
                                 "datasets",
-                                "socrata:data.sfgov.org:vw6y-z8j6",
+                                "socrata:data.sfgov.org:rkru-6vcg",
                                 "code",
                                 "powershell"
                             ],
@@ -503,7 +503,7 @@
                             "path": [
                                 "api",
                                 "datasets",
-                                "socrata:data.sfgov.org:vw6y-z8j6",
+                                "socrata:data.sfgov.org:rkru-6vcg",
                                 "code",
                                 "r-socrata"
                             ],
@@ -572,7 +572,7 @@
                             "path": [
                                 "api",
                                 "datasets",
-                                "socrata:data.sfgov.org:vw6y-z8j6",
+                                "socrata:data.sfgov.org:rkru-6vcg",
                                 "code",
                                 "sas"
                             ],
@@ -641,7 +641,7 @@
                             "path": [
                                 "api",
                                 "datasets",
-                                "socrata:data.sfgov.org:vw6y-z8j6",
+                                "socrata:data.sfgov.org:rkru-6vcg",
                                 "code",
                                 "soda-ruby"
                             ],
@@ -710,7 +710,7 @@
                             "path": [
                                 "api",
                                 "datasets",
-                                "socrata:data.sfgov.org:vw6y-z8j6",
+                                "socrata:data.sfgov.org:rkru-6vcg",
                                 "code",
                                 "soda-dotnet"
                             ],
@@ -779,7 +779,7 @@
                             "path": [
                                 "api",
                                 "datasets",
-                                "socrata:data.sfgov.org:vw6y-z8j6",
+                                "socrata:data.sfgov.org:rkru-6vcg",
                                 "code",
                                 "stata"
                             ],
@@ -848,17 +848,19 @@
         },
         {
             "name": "AI",
+            "description": "This folder contains requests to facilitate integration of the dataset wwith various AI tools.",
             "item": []
         },
         {
             "name": "Visualization",
+            "description": "This folder contains requests to facilitate the visualization of the dataset.",
             "item": []
         }
     ],
     "variable": [
         {
             "id": "socrataId",
-            "value": "vw6y-z8j6"
+            "value": "rkru-6vcg"
         }
     ]
 }

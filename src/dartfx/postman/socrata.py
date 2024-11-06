@@ -112,15 +112,36 @@ class PostmanCollectionGenerator():
         # Metadata Folder
         metadata_folder = postman_collection.ItemGroup()
         metadata_folder.name = "Metadata"
-        metadata_folder.description  = "Machine actionable knowledge around data (metadata) plays a fundamental role in data science, machine learning, and data governance. "
-        metadata_folder.description += "Requests in this folder provide information about the dataset based on the following standards:"
-        metadata_folder.description += "\n- [Croissant](https://mlcommons.org/working-groups/data/croissant/): a rapidly emerging specification for machine learning and AI"
-        metadata_folder.description += "\n- [DCAT](https://www.w3.org/TR/vocab-dcat-3/): the W3C Data Catalog Vocabulary"
-        metadata_folder.description += "\n- [DDI-C](https://ddialliance.org/Specification/DDI-Codebook/2.5/): the DDI Alliance light-weight XML based Codebook specification"
-        metadata_folder.description += "\n- [DDI-CDI](https://ddialliance.org/Specification/ddi-cdi): the DDI Alliance latest RDF based Cross-Domain Integration specification"
-        metadata_folder.description += "\n"
-        metadata_folder.description += "\nThese standards and related best practices support the [FAIR principles](https://www.go-fair.org/fair-principles/) and the [Cross-Domain Interoperability Framework](https://cdif.codata.org/)."
-        metadata_folder.description += " The APIs endpoints are hosted by the [High-Value Data Network](https://www.highvaluedata.net)"
+        metadata_folder.description = (
+            "Metadata is essential for creating machine-actionable insights that drive automation, "
+            "machine learning, and efficient data governance. High-quality metadata reduces the burden "
+            "of data wrangling, facilitating faster, more reliable insights and enabling seamless integration "
+            "of datasets across platforms. The requests in this folder deliver structured metadata adhering to "
+            "the following industry standards:"
+        )
+        metadata_folder.description += (
+            "\n- [Croissant](https://mlcommons.org/working-groups/data/croissant/): a leading-edge specification "
+            "designed to enhance machine learning and AI workflows through standardized metadata practices"
+        )
+        metadata_folder.description += (
+            "\n- [DCAT](https://www.w3.org/TR/vocab-dcat-3/): the W3C's Data Catalog Vocabulary, widely used for "
+            "data discovery and cataloging in open data ecosystems"
+        )
+        metadata_folder.description += (
+            "\n- [DDI-C](https://ddialliance.org/Specification/DDI-Codebook/2.5/): a lightweight XML-based codebook "
+            "specification from the DDI Alliance that supports efficient metadata management for social, behavioral, "
+            "and economic sciences"
+        )
+        metadata_folder.description += (
+            "\n- [DDI-CDI](https://ddialliance.org/Specification/ddi-cdi): the latest RDF-based Cross-Domain Integration "
+            "specification from the DDI Alliance, enabling metadata interoperability across diverse domains"
+        )
+        metadata_folder.description += (
+            "\n\nBy leveraging these standards, along with best practices, this folder supports the [FAIR principles]"
+            "(https://www.go-fair.org/fair-principles/) (Findable, Accessible, Interoperable, and Reusable data) "
+            "and the [Cross-Domain Interoperability Framework](https://cdif.codata.org/). The API endpoints are hosted "
+            "by the [High-Value Data Network](https://www.highvaluedata.net) to facilitate broad, cross-functional data utility."
+        )
         collection.item.append(metadata_folder)
         
         base_url = f"https://highvaluedata.net/api/datasets/socrata:{dataset.server.host}:{dataset.id}"
@@ -131,7 +152,10 @@ class PostmanCollectionGenerator():
         item.create_request(f"{base_url}/croissant")
         item.request.url.create_query_parameter('format', description="The serialization format.", disabled=True)
         item.request.description  = "## Croissant"
-        item.request.description += "\nFor more infornation, visit https://mlcommons.org/working-groups/data/croissant/ and https://github.com/mlcommons/croissant"
+        item.request.description += (
+            "\nReturn the dataset metadata based on the MLCommons Croissant specification."
+            "\nFor more infornation, visit https://mlcommons.org/working-groups/data/croissant/ and https://github.com/mlcommons/croissant"
+        )
         metadata_folder.item.append(item)
 
 
@@ -140,8 +164,11 @@ class PostmanCollectionGenerator():
         item.name = "DCAT W3C (JSON-LD)"
         item.create_request(f"{base_url}/dcat")
         item.request.url.create_query_parameter('format', description="The serialization format.", disabled=True)
-        item.request.description = "## DCAT"
-        item.request.description += "\nFor more infornation, visit https://www.w3.org/TR/vocab-dcat-3/"
+        item.request.description = "## DCAT (JSON-LD)"
+        item.request.description += (
+            "\nReturn the dataset metadata based on the W3C Data Catalog standard.."
+            "\nFor more infornation, visit https://www.w3.org/TR/vocab-dcat-3/"
+        )
         metadata_folder.item.append(item)
 
         # DCAT request
@@ -205,8 +232,12 @@ class PostmanCollectionGenerator():
 
         # CODE FOLDER
         code_folder = postman_collection.ItemGroup()
-        code_folder.name = "Code"
-        code_folder.description  = "This folder contains requests to bootstrap code for accessing the datasets from various development environment."
+        code_folder.name = "Code Snippets"
+        code_folder.description = (
+            "This folder provides API requests that generate code snippets designed to streamline development and data science workflows. "
+            "By offering reusable, customizable code samples, this collection helps developers and data scientists to quickly implement "
+            "standard tasks, reduce boilerplate code, and improve productivity across projects.."
+        )
         collection.item.append(code_folder)
 
         languages = [
@@ -237,13 +268,13 @@ class PostmanCollectionGenerator():
         # AI FOLDER
         ai_folder = postman_collection.ItemGroup()
         ai_folder.name = "AI"
-        metadata_folder.description  = "This folder contains requests to facilitate integration of the dataset wwith various AI tools."
+        ai_folder.description  = "This folder contains requests to facilitate integration of the dataset wwith various AI tools."
         collection.item.append(ai_folder)
 
         # VISUALIZATION FOLDER
         dv_folder = postman_collection.ItemGroup()
         dv_folder.name = "Visualization"
-        metadata_folder.description  = "This folder contains requests to facilitate the visualization of the dataset."
+        dv_folder.description  = "This folder contains requests to facilitate the visualization of the dataset."
         collection.item.append(dv_folder)
 
         # COLLECTION VARIABLES

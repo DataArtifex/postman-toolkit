@@ -605,6 +605,13 @@ class WorkspaceManager:
         """Helper to create a collection for this workspace."""
         return self.postman_api.create_collection(self.id, name, collectionSchemaUrl)
 
+    def find_collection_id(self, collection_name: str):
+        """Find a collection ID by name."""
+        for collection in self.collections:
+            print(collection)
+            if collection["name"] == collection_name:
+                return collection["id"]
+
     def get_global_variables(self):
         """Get the workspace global variables"""
         response = self._api.get_request(
@@ -639,14 +646,19 @@ class WorkspaceManager:
         data = response.json()
         return data
 
-
     def get_collection(self, collection_id) -> dict:
         """Proxy to Postman API get_collection method."""
         return self.postman_api.get_collection(collection_id)
 
-    def import_collection(self, collection: dict):
+    def import_collection(self, collection: dict, replace: bool = False):
         """Import a Postman collection in this workspace"""
-        collection_id = self.postman_api.import_collection(self._id, collection)
+        collection_info = collection.get("info")    
+        collection_name = collection_info.get("name")
+        collection_id = self.find_collection_id(collection_name)
+        if collection_id and replace:
+            self.postman_api.replace_collection(collection_id, collection)
+        else:
+            collection_id = self.postman_api.import_collection(self._id, collection)
         self.refresh_workspace()
         return collection_id
 
@@ -768,6 +780,11 @@ class CollectionManager:
         """Refreshes the cached collection data from the API"""
         data = self.get_collection()
         self._data = data["collection"]
+        
+    
+    def replace_collection(self, collection: dict):
+        """Proxy for Postman API replace_collection method"""
+        return self._api.replace_collection(self._id, collection)
 
     # FOLDER
     def get_folder(self, id: str):
