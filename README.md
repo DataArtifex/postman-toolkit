@@ -4,7 +4,7 @@
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/hatch-foo.svg)](https://pypi.org/project/hatch-foo)
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](code_of_conduct.md)
 
-**This project is in its early development stages, so stability is not guaranteed, and documentation is limited. We welcome your feedback and contributions as we refine and expand this project together!**
+**This project is in its early development stages. Stability is not guaranteed and documentation is limited. We welcome your feedback and contributions as we refine and expand this project together!**
 
 ## Overview
 

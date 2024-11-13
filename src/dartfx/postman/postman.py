@@ -604,10 +604,10 @@ class WorkspaceManager:
 
     def find_collection_id(self, collection_name: str):
         """Find a collection ID by name."""
-        for collection in self.collections:
-            print(collection)
-            if collection["name"] == collection_name:
-                return collection["id"]
+        if self.collections: # check for empty workspace
+            for collection in self.collections:
+                if collection["name"] == collection_name:
+                    return collection["id"]
 
     def get_global_variables(self):
         """Get the workspace global variables"""
