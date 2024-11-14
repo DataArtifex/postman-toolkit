@@ -3,8 +3,9 @@ Classes and helpers to publish Socrata data products to Postman collections.
 """
 from dataclasses import dataclass, field
 
-from dartfx.postman import postman
-from dartfx.postman import postman_collection
+from . import templates
+from . import postman
+from . import postman_collection
 from dartfx.socrata import SocrataServer, SocrataDataset
 
 @dataclass
@@ -110,110 +111,21 @@ class PostmanCollectionGenerator():
         collection.info.description = description
 
         # Metadata Folder
-        metadata_folder = postman_collection.ItemGroup()
-        metadata_folder.name = "Metadata"
-        metadata_folder.description = (
-            "Metadata is essential for creating machine-actionable insights that drive automation, "
-            "machine learning, and efficient data governance. High-quality metadata reduces the burden "
-            "of data wrangling, facilitating faster, more reliable insights and enabling seamless integration "
-            "of datasets across platforms. The requests in this folder deliver structured metadata adhering to "
-            "the following industry standards:"
-        )
-        metadata_folder.description += (
-            "\n- [Croissant](https://mlcommons.org/working-groups/data/croissant/): a leading-edge specification "
-            "designed to enhance machine learning and AI workflows through standardized metadata practices"
-        )
-        metadata_folder.description += (
-            "\n- [DCAT](https://www.w3.org/TR/vocab-dcat-3/): the W3C's Data Catalog Vocabulary, widely used for "
-            "data discovery and cataloging in open data ecosystems"
-        )
-        metadata_folder.description += (
-            "\n- [DDI-C](https://ddialliance.org/Specification/DDI-Codebook/2.5/): a lightweight XML-based codebook "
-            "specification from the DDI Alliance that supports efficient metadata management for social, behavioral, "
-            "and economic sciences"
-        )
-        metadata_folder.description += (
-            "\n- [DDI-CDI](https://ddialliance.org/Specification/ddi-cdi): the latest RDF-based Cross-Domain Integration "
-            "specification from the DDI Alliance, enabling metadata interoperability across diverse domains"
-        )
-        metadata_folder.description += (
-            "\n\nBy leveraging these standards, along with best practices, this folder supports the [FAIR principles]"
-            "(https://www.go-fair.org/fair-principles/) (Findable, Accessible, Interoperable, and Reusable data) "
-            "and the [Cross-Domain Interoperability Framework](https://cdif.codata.org/). The API endpoints are hosted "
-            "by the [High-Value Data Network](https://www.highvaluedata.net) to facilitate broad, cross-functional data utility."
-        )
+        metadata_folder = templates.get_metadata_folder()
         collection.item.append(metadata_folder)
         
         base_url = f"https://highvaluedata.net/api/datasets/socrata:{dataset.server.host}:{dataset.id}"
 
-        # Croissant request
-        item = postman_collection.Item()
-        item.name = "Croissant"
-        item.create_request(f"{base_url}/croissant")
-        item.request.url.create_query_parameter('format', description="The serialization format.", disabled=True)
-        item.request.description  = "## Croissant"
-        item.request.description += (
-            "\nReturn the dataset metadata based on the MLCommons Croissant specification."
-            "\nFor more infornation, visit https://mlcommons.org/working-groups/data/croissant/ and https://github.com/mlcommons/croissant"
-        )
-        metadata_folder.item.append(item)
-
-
-        # DCAT request
-        item = postman_collection.Item()
-        item.name = "DCAT W3C (JSON-LD)"
-        item.create_request(f"{base_url}/dcat")
-        item.request.url.create_query_parameter('format', description="The serialization format.", disabled=True)
-        item.request.description = "## DCAT (JSON-LD)"
-        item.request.description += (
-            "\nReturn the dataset metadata based on the W3C Data Catalog standard.."
-            "\nFor more infornation, visit https://www.w3.org/TR/vocab-dcat-3/"
-        )
-        metadata_folder.item.append(item)
-
-        # DCAT request
-        item = postman_collection.Item()
-        item.name = "DCAT W3C (Turtle)"
-        item.create_request(f"{base_url}/dcat")
-        item.request.url.create_query_parameter('format', value='ttl', description="The serialization format.")
-        item.request.description = "## DCAT"
-        item.request.description += "\nFor more infornation, visit https://www.w3.org/TR/vocab-dcat-3/"
-        metadata_folder.item.append(item)
-                
-        # DDI-Codebook request
-        item = postman_collection.Item()
-        item.name = "DDI-Codebook"
-        item.create_request(f"{base_url}/ddi/codebook")
-        item.request.description = "## DDI Codebook"
-        item.request.description += "\nDDI-Codebook (Data Documentation Initiative Codebook), also known as DDI version 2, is a metadata standard designed for describing simple survey data for exchange or archiving in the social, behavioral, and economic sciences. It's an XML-based specification that provides a structured format for documenting various aspects of research data, including variables, coding schemes, methodology, and other relevant information. DDI-Codebook is simpler compared to its counterpart DDI-Lifecycle (version 3), making it suitable for straightforward data documentation needs. It allows researchers and data archivists to create standardized, machine-readable metadata that facilitates data discovery, understanding, and reuse across different research projects and institutions[1][3]."
-        item.request.description += "\nFor more information, visit https://ddialliance.org/Specification/DDI-Codebook/2.5/"
-        metadata_folder.item.append(item)
-
-        # DDI-CDI CDIF request
-        item = postman_collection.Item()
-        item.name = "DDI-CDI CDIF (JSON-LD)"
-        item.create_request(f"{base_url}/ddi/cdif")
-        item.request.description = "## DDI-CDI CDIF"
-        item.request.description += "\nFor more information, visit  https://cdif.codata.org/"
-        metadata_folder.item.append(item)
-
-        # DDI-CDI CDIF request
-        item = postman_collection.Item()
-        item.name = "DDI-CDI CDIF (Turtle)"
-        item.description = """
-        <TODO
-        For more information, visit https://cdif.codata.org/
-        """
-        item.create_request(f"{base_url}/ddi/cdif")
-        item.request.url.create_query_parameter('format', value='ttl', description="The serialization format.")
-        item.request.description = "## DDI-CDI CDIF"
-        item.request.description += "\nFor more information, visit  https://cdif.codata.org/"
-        metadata_folder.item.append(item)
+        # Metadata requests
+        metadata_folder.item.append(templates.get_croissant_request(base_url))
+        metadata_folder.item.append(templates.get_dcat_request(base_url))
+        metadata_folder.item.append(templates.get_dcat_request(base_url, format='turtle'))
+        metadata_folder.item.append(templates.get_ddi_codebook_request(base_url))
+        metadata_folder.item.append(templates.get_ddi_cdif_request(base_url))
+        metadata_folder.item.append(templates.get_ddi_cdif_request(base_url, format='turtle'))
 
         # DATA FOLDER
-        data_folder = postman_collection.ItemGroup()
-        data_folder.name = "Data"
-        data_folder.description  = "This folder contains request to query the dataset using the host platform API."
+        data_folder = templates.get_data_folder()
         collection.item.append(data_folder)
 
         # Query Data Request (JSON)
@@ -231,13 +143,7 @@ class PostmanCollectionGenerator():
         data_folder.item.append(item)
 
         # CODE FOLDER
-        code_folder = postman_collection.ItemGroup()
-        code_folder.name = "Code Snippets"
-        code_folder.description = (
-            "This folder provides API requests that generate code snippets designed to streamline development and data science workflows. "
-            "By offering reusable, customizable code samples, this collection helps developers and data scientists to quickly implement "
-            "standard tasks, reduce boilerplate code, and improve productivity across projects.."
-        )
+        code_folder = templates.get_code_folder()
         collection.item.append(code_folder)
 
         languages = [
@@ -259,22 +165,15 @@ class PostmanCollectionGenerator():
             code_folder.item.append(item)
 
         # SQL FOLDER
-        sql_folder = postman_collection.ItemGroup()
-        sql_folder.name = "SQL"
-        sql_folder.description  = "This folder contains requests to generate SQL code for loading the dataset in various database environments."
+        sql_folder = templates.get_sql_folder()
         collection.item.append(sql_folder)
 
-
         # AI FOLDER
-        ai_folder = postman_collection.ItemGroup()
-        ai_folder.name = "AI"
-        ai_folder.description  = "This folder contains requests to facilitate integration of the dataset with various AI platforms."
+        ai_folder = templates.get_ai_folder()
         collection.item.append(ai_folder)
 
         # VISUALIZATION FOLDER
-        dv_folder = postman_collection.ItemGroup()
-        dv_folder.name = "Visualization"
-        dv_folder.description  = "This folder contains requests to facilitate the visualization of the dataset."
+        dv_folder = templates.get_visualization_folder()
         collection.item.append(dv_folder)
 
         # COLLECTION VARIABLES

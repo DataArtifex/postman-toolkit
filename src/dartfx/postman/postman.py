@@ -97,7 +97,7 @@ class PostmanApi:
     ) -> str:
         """Create a blank Postman collection.
 
-        Use import_collection to create from a dictionnary.
+        Use import_collection to create from a dictionary.
 
         Args:
             workspace_id (str): The ID of the workspace
@@ -125,7 +125,7 @@ class PostmanApi:
         if variables:
             data["collection"]["variable"] = variables
         # call API
-        logging.debug("API: Cteate collection")
+        logging.debug("API: Create collection")
         logging.debug(data)
         response = self.post_request(
             "collections",
@@ -259,7 +259,7 @@ class PostmanApi:
             json=folder_data,
         )
         folder_data = response.json()
-        # transfering folder requires uid, so return that instead of just id
+        # transferring folder requires uid, so return that instead of just id
         uid = folder_data["data"]["owner"]+'-'+folder_data["data"]["id"]
         return uid
 
@@ -385,7 +385,7 @@ class PostmanApi:
         Args:
             uids (list): The folder UIDs to transfer.
             target_uid (str): the UID of the destination collection or folder.
-            target_model (str, optional): he type of item where the items will be transferred to (collection or folder). Defaults to 'collection'.
+            target_model (str, optional): The type of item where the items will be transferred to (collection or folder). Defaults to 'collection'.
             location_position (str, optional): The item's position within the destination (start, end, before, after). Defaults to 'start'.
             location_model (str, optional):  For the before or after positions, a string value that contains the type of item (model) that the transferred item will be positioned by. Defaults to None.
             location_uid (str, optional): For the before or after positions, a string value that contains the model's UID. Defaults to None.
@@ -495,12 +495,12 @@ class WorkspaceManager:
 
     TYPES = ["personal", "private", "public", "team", "partner"]
     _id: str  # workspace id
-    _api: str  # API object
+    _api: PostmanApi  # API object
     _data: dict  # the workspace Postman JSON object
     _tags: list[str]  # the workspace tags as an array
     _global_variables: list[
         object
-    ]  # the workspace gloabl variables as an array of JSON objects
+    ]  # the workspace global variables as an array of JSON objects
     _updated_at: datetime  # local update timestamp
 
     def __init__(self, api: PostmanApi, id: str):
@@ -527,8 +527,8 @@ class WorkspaceManager:
 
     @name.setter
     def name(self, value: str):
-        self._date["name"] = value
-        self._updated_at = datetime.now
+        self._data["name"] = value
+        self._updated_at = datetime.now()
 
     @property
     def type(self) -> str:
@@ -541,7 +541,7 @@ class WorkspaceManager:
     @description.setter
     def description(self, value: str):
         self._data["description"] = value
-        self._updated_at = datetime.now
+        self._updated_at = datetime.now()
 
     @property
     def visibility(self) -> str:
@@ -550,7 +550,7 @@ class WorkspaceManager:
     @visibility.setter
     def visibility(self, value: bool):
         self._data["visibility"] = bool(value)
-        self._updated_at = datetime.now
+        self._updated_at = datetime.now()
 
     @property
     def created_by(self) -> str:
@@ -684,7 +684,7 @@ class CollectionManager:
     """Helper to interact with an existing Postman collection"""
 
     _id: str  # Postman collection id
-    _api: str  # API object
+    _api: PostmanApi  # API object
     _data: dict  # the underlying Postman JSON object
     _updated_at: datetime  # local update timestamp
     _tags: list[str]  # the collection tags as an array (enterprise only)
@@ -764,7 +764,7 @@ class CollectionManager:
         return self.data.get("variable")
 
     def get_collection(self):
-        """Fecth colelction data from API"""
+        """Fetch collection data from API"""
         response = self._api.get_request(
             f"collections/{self._id}", "Get collection information"
         )
@@ -912,7 +912,7 @@ class DataProductCollectionManager(CollectionManager):
     # DartFX data storage
     def get_dartfx_data(self, refresh=True):
         data = self.get_variable(self._dartfx_variable_name)
-        self._dartfx_data = json.loads(data["value"]) # return the variable value as dictionnary
+        self._dartfx_data = json.loads(data["value"]) # return the variable value as dictionary
         return self._dartfx_data
 
     def set_dartfx_data(self):
@@ -942,7 +942,7 @@ class Foldermanager:
 
     _id: str  # Postman folder id
     _collection_id: str  # Postman collection id
-    _api: str  # API object
+    _api: PostmanApi  # API object
     _data: dict  # the underlying Postman JSON object
     _updated_at: datetime  # local update timestamp
     _tags: list[str]  # the collection tags as an array (enterprise only)
