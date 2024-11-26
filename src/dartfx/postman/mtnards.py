@@ -1,5 +1,12 @@
+from dataclasses import dataclass, field
 from dartfx.mtnards import MtnaRdsServer
-from .postman import PostmanApi
+from dartfx.postmanapi import PostmanApi
+
+
+@dataclass
+class MtnaRdsPostmanPublisherConfig():
+    name_prefix: str = field(default=None)
+    name_suffix: str = field(default=None)
 
 class MtnaRdsPostmanPublisher():
     _rds_server: MtnaRdsServer

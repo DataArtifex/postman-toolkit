@@ -9,21 +9,21 @@ from . import postman_collection
 from dartfx.socrata import SocrataServer, SocrataDataset
 
 @dataclass
-class PostmanPublisherConfig():
+class SocrataPostmanPublisherConfig():
     name_prefix: str = field(default=None)
     name_suffix: str = field(default=None)
     
 class SocrataPostmanPublisher():
     _postman_api: postman.PostmanApi
     _server: SocrataServer
-    _config: PostmanPublisherConfig
+    _config: SocrataPostmanPublisherConfig
 
-    def __init__(self, api: postman.PostmanApi, server: SocrataServer, config:PostmanPublisherConfig = PostmanPublisherConfig()):
+    def __init__(self, api: postman.PostmanApi, server: SocrataServer, config:SocrataPostmanPublisherConfig = SocrataPostmanPublisherConfig()):
         self._postman_api = api
         self._server = server
         self._config = config
 
-    def publish_dataset(self, dataset_id:str, target_id:str, target_type="workspace", config:"PostmanPublisherConfig" = None) -> str:
+    def publish_dataset(self, dataset_id:str, target_id:str, target_type="workspace", config:"SocrataPostmanPublisherConfig" = None) -> str:
         """Publish a dataset as a collection under an existing workspace.
         
         If the target is a workspace, a new collection will be created. 
@@ -71,9 +71,9 @@ class SocrataPostmanPublisher():
 
 class PostmanCollectionGenerator():
     dataset: SocrataDataset
-    config: PostmanPublisherConfig
+    config: SocrataPostmanPublisherConfig
     
-    def __init__(self, dataset: SocrataDataset, config:PostmanPublisherConfig = PostmanPublisherConfig()):
+    def __init__(self, dataset: SocrataDataset, config:SocrataPostmanPublisherConfig = SocrataPostmanPublisherConfig()):
         self.dataset = dataset
         self.config = config
 
