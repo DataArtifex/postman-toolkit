@@ -1,5 +1,5 @@
 """
-Integration with High-Valude Data Network 
+Integration with High-Value Data Network 
 """
 
 class Credentials():

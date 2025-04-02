@@ -46,7 +46,7 @@ class MtnaRdsPostmanPublisher():
         temp_collection_id = self.publish_data_product_to_workspace(catalog_id, data_product_id, temp_workspace_id)
         temp_collection = self.postman_api.get_collection(temp_collection_id)
         # create a target folder to host the RDS collection
-        if create_root: # this should alnost always be the case
+        if create_root: # this should almost always be the case
             # this goes under the collection when folder_uid is not specified
             target_uid = self._create_folder_for_rds_collection(rds_collection, collection_uid, folder_uid)
         elif folder_uid:
