@@ -1,4 +1,4 @@
-from . import postman_collection
+from dartfx.postmanapi import postman_collection
 
 def get_metadata_folder():
         folder = postman_collection.ItemGroup()
@@ -46,7 +46,7 @@ def get_croissant_request(base_url, format=None):
     item.request.description  = "## Croissant"
     item.request.description += (
         "\nReturn the dataset metadata based on the MLCommons Croissant specification."
-        "\nFor more infornation, visit https://mlcommons.org/working-groups/data/croissant/ and https://github.com/mlcommons/croissant"
+        "\nFor more information, visit https://mlcommons.org/working-groups/data/croissant/ and https://github.com/mlcommons/croissant"
     )
     return item
 
