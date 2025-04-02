@@ -1,27 +1,27 @@
 """
 Classes and helpers to publish Socrata data products to Postman collections.
 """
-from dataclasses import dataclass, field
+from pydantic import BaseModel, Field
 
 from . import templates
-from . import postman
-from . import postman_collection
+from dartfx.postmanapi import postman
+from dartfx.postmanapi import postman_collection
 from dartfx.socrata import SocrataServer, SocrataDataset
 
-@dataclass
-class SocrataPostmanPublisherConfig():
-    name_prefix: str = field(default=None)
-    name_suffix: str = field(default=None)
+class SocrataPostmanPublisherConfig(BaseModel):
+    # unicode prefixes: ⛁ ⛃ 🔢
+    # More at https://www.compart.com/en/unicode/category/So
+    name_prefix: str | None = Field(default=None)
+    name_suffix: str | None = Field(default=None)
     
-class SocrataPostmanPublisher():
-    _postman_api: postman.PostmanApi
-    _server: SocrataServer
-    _config: SocrataPostmanPublisherConfig
+class SocrataPostmanPublisher(BaseModel):
+    postman_api: postman.PostmanApi
+    server: SocrataServer
+    config: SocrataPostmanPublisherConfig = Field(default=SocrataPostmanPublisherConfig())
 
-    def __init__(self, api: postman.PostmanApi, server: SocrataServer, config:SocrataPostmanPublisherConfig = SocrataPostmanPublisherConfig()):
-        self._postman_api = api
-        self._server = server
-        self._config = config
+    model_config = {
+        "arbitrary_types_allowed": True # for postman.PostmanApi
+    }
 
     def publish_dataset(self, dataset_id:str, target_id:str, target_type="workspace", config:"SocrataPostmanPublisherConfig" = None) -> str:
         """Publish a dataset as a collection under an existing workspace.
@@ -33,18 +33,18 @@ class SocrataPostmanPublisher():
 
         # use default config if not specified
         if config is None:
-            config = self._config
+            config = self.config
 
         # get the dataset
-        dataset = SocrataDataset(self._server, dataset_id)
+        dataset = SocrataDataset(self.server, dataset_id)
 
         # instantiate collection manager
         if target_type == "workspace":
             # create a new collection
-            collection_manager = postman.DataProductCollectionManager.factory(self._postman_api, target_id, dataset.id, dartfx_id=f'socrata:{dataset.server.host}:{dataset.id}')
+            collection_manager = postman.DataProductCollectionManager.factory(self.postman_api, target_id, dataset.id, dartfx_id=f'socrata:{dataset.server.host}:{dataset.id}')
         elif target_type == "collection":
             # use existing collection
-            collection_manager = postman.DataProductCollectionManager(self._postman_api, target_id)
+            collection_manager = postman.DataProductCollectionManager(self.postman_api, target_id)
         else:
             raise ValueError("target_type must be 'workspace' or 'collection'")
 
@@ -69,14 +69,10 @@ class SocrataPostmanPublisher():
         return collection_manager.id
     
 
-class PostmanCollectionGenerator():
+class SocrataPostmanCollectionGenerator(BaseModel):
     dataset: SocrataDataset
-    config: SocrataPostmanPublisherConfig
+    config: SocrataPostmanPublisherConfig = Field(default=SocrataPostmanPublisherConfig())
     
-    def __init__(self, dataset: SocrataDataset, config:SocrataPostmanPublisherConfig = SocrataPostmanPublisherConfig()):
-        self.dataset = dataset
-        self.config = config
-
     def _add_query_request_parameters(self, request: postman_collection.Request):
         request.url.create_query_parameter('$select',description="The set of columns to be returned, similar to a SELECT in SQL. Default: All columns, equivalent to $select=*.", disabled=True)
         request.url.create_query_parameter('$where',None, "Filters the rows to be returned, similar to WHERE. No default value.", True)
