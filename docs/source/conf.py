@@ -6,7 +6,7 @@
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
 
-project = 'Data Artifex Foo'
+project = 'Data Artifex Postman Toolkit'
 copyright = '2024, Pascal Heus'
 author = 'Pascal Heus'
 release = '0.1.0'

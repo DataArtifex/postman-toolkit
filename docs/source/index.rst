@@ -1,10 +1,11 @@
-Welcome to Data Artifex Foo's documentation!
-============================================
+Data Artifex Postman Toolkit
+============================
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
+   modules
 
 Indices and tables
 ==================
