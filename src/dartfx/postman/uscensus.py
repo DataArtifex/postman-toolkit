@@ -1,52 +1,55 @@
 """
 Classes and helpers to publish Socrata data products to Postman collections.
 """
-from pydantic import BaseModel, Field
+from dataclasses import dataclass, field
 
 from . import templates
 from dartfx.postmanapi import postman
 from dartfx.postmanapi import postman_collection
-from dartfx.socrata import SocrataServer, SocrataDataset
+from dartfx.uscensus import UsCensusApi, UsCensusCatalog,  UsCensusDataset, UsCensusMicrodataDataset, UsCensusAggregatedDataset
 
-class SocrataPostmanPublisherConfig(BaseModel):
-    # unicode prefixes: ⛁ ⛃ 🔢
-    # More at https://www.compart.com/en/unicode/category/So
-    name_prefix: str | None = Field(default=None)
-    name_suffix: str | None = Field(default=None)
+@dataclass
+class UsCensusPostmanPublisherConfig():
+    name_prefix: str = field(default=None)
+    name_suffix: str = field(default=None)
     
-class SocrataPostmanPublisher(BaseModel):
-    postman_api: postman.PostmanApi
-    server: SocrataServer
-    config: SocrataPostmanPublisherConfig = Field(default=SocrataPostmanPublisherConfig())
+class UsCensusPostmanPublisher():
+    _postman_api: postman.PostmanApi
+    _server: UsCensusCatalog
+    _config: UsCensusPostmanPublisherConfig
 
-    model_config = {
-        "arbitrary_types_allowed": True # for postman.PostmanApi
-    }
+    def __init__(self, api: postman.PostmanApi, server: UsCensusCatalog, config:UsCensusPostmanPublisherConfig = UsCensusPostmanPublisherConfig()):
+        self._postman_api = api
+        self._server = server
+        self._config = config
 
-    def publish_dataset(self, dataset_id:str, workspace_id:str=None, collection_id:str=None, config:"SocrataPostmanPublisherConfig" = None) -> str:
+    def publish_dataset(self, dataset_id:str, target_id:str, target_type="workspace", config:UsCensusPostmanPublisherConfig = None) -> str:
         """Publish a dataset as a collection under an existing workspace.
         
-        If collection_id is specified, its content will be replaced (but the collection id remains the same).
-        Otherwise, workspace_id must be specified and a new collection will be created. 
+        If the target is a workspace, a new collection will be created. 
+        If the target is a collection, its content will be replaced (but the collection id remains the same).
 
         """
 
         # use default config if not specified
         if config is None:
-            config = self.config
+            config = self._config
 
         # get the dataset
-        dataset = SocrataDataset(self.server, dataset_id)
+        dataset = self._server.datasets.get(dataset_id)
+
+        if dataset is None:
+            raise ValueError(f"Dataset {dataset_id} not found")
 
         # instantiate collection manager
-        if collection_id:
-            # use existing collection
-            collection_manager = postman.DataProductCollectionManager(self.postman_api, collection_id)
-        elif workspace_id:
+        if target_type == "workspace":
             # create a new collection
-            collection_manager = postman.DataProductCollectionManager.factory(self.postman_api, workspace_id, dataset.id, dartfx_id=f'socrata:{dataset.server.host}:{dataset.id}')
+            collection_manager = postman.DataProductCollectionManager.factory(self._postman_api, target_id, dataset.id, dartfx_id=f'uscensus:{dataset.id}')
+        elif target_type == "collection":
+            # use existing collection
+            collection_manager = postman.DataProductCollectionManager(self._postman_api, target_id)
         else:
-            raise ValueError("Either a collection_id or workspace_id must be specified")
+            raise ValueError("target_type must be 'workspace' or 'collection'")
 
         # collection name
         name = f"{dataset.name} [{dataset.id}]"
@@ -69,10 +72,14 @@ class SocrataPostmanPublisher(BaseModel):
         return collection_manager.id
     
 
-class SocrataPostmanCollectionGenerator(BaseModel):
-    dataset: SocrataDataset
-    config: SocrataPostmanPublisherConfig = Field(default=SocrataPostmanPublisherConfig())
+class PostmanCollectionGenerator():
+    dataset: UsCensusDataset
+    config: UsCensusPostmanPublisherConfig
     
+    def __init__(self, dataset: UsCensusDataset, config:UsCensusPostmanPublisherConfig = UsCensusPostmanPublisherConfig()):
+        self.dataset = dataset
+        self.config = config
+
     def _add_query_request_parameters(self, request: postman_collection.Request):
         request.url.create_query_parameter('$select',description="The set of columns to be returned, similar to a SELECT in SQL. Default: All columns, equivalent to $select=*.", disabled=True)
         request.url.create_query_parameter('$where',None, "Filters the rows to be returned, similar to WHERE. No default value.", True)

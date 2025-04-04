@@ -23,8 +23,8 @@ classifiers = [
   "Programming Language :: Python :: Implementation :: PyPy",
 ]
 dependencies = [
-  "pydantic>=2",
-  "requests"
+  "jinja2>=3",
+  "pydantic>=2"
 ]
 
 [project.urls]
@@ -40,6 +40,12 @@ exclude = [
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/dartfx"]
+
+[tool.hatch.build] 
+# Include Jinja2 templates
+include = [
+  "src/dartfx/templates/**/*.j2"
+]
 
 [tool.hatch.version]
 path = "src/dartfx/postman/__about__.py"
