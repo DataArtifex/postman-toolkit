@@ -92,10 +92,7 @@ class SocrataPostmanCollectionGenerator(BaseModel):
         collection.info.name = name
 
         # collection description    
-        description = ""
-        if dataset.description:
-            description = f"## Description\n{dataset.description}\n"
-        collection.info.description = description
+        collection.info.description = dataset.get_markdown()
 
         # Metadata Folder
         metadata_folder = templates.get_metadata_folder()
