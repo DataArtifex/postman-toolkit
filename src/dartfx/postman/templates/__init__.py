@@ -1,7 +1,9 @@
 import os
+from dartfx.postmanapi import postman
 from dartfx.postmanapi import postman_collection
+from dartfx.socrata import SocrataServer
 from jinja2 import Environment, FileSystemLoader
-
+import logging
 
 TEMPLATES_DIR = os.getenv("DARTFX_POSTMAN_JINJA_TEMPLATES_DIR",os.path.dirname(os.path.abspath(__file__)))
 
@@ -59,6 +61,18 @@ def get_ddi_cdif_request(base_url, format=None):
     item.request.description = template.render()
     return item
 
+def get_markdown_request(base_url):
+    # Markdown request
+    item = postman_collection.Item()
+    item.name = "Markdown"
+    item.create_request(f"{base_url}/markdown")
+    template = jinja_env.get_template("metadata_markdown_request.md.j2")
+    item.request.description = template.render()
+    template = jinja_env.get_template("metadata_markdown_request_visualizer.js.j2")
+    event = item.add_test_script(template.render())
+    return item
+
+
 def get_data_folder():
     folder = postman_collection.ItemGroup()
     folder.name = "Data"
@@ -93,3 +107,16 @@ def get_visualization_folder():
     template = jinja_env.get_template("visualization_folder.md.j2")
     folder.description = template.render()
     return folder
+
+def initialize_socrata_workspace(server: SocrataServer, postman_api: postman.PostmanApi, workspace_id: str = None, workspace_type:str ="public"):
+    """Initialize a workspace for a Socrata server instance."""
+    template = jinja_env.get_template("socrata_workspace.md.j2")
+    description = template.render(name=server.name, home=server.host_url) 
+    # create a new workspace (if not specified)
+    if workspace_id is None:
+        workspace_id = postman_api.create_workspace(server.name, type=workspace_type, description=description)
+    # retrieve the workspace
+    manager = postman.WorkspaceManager(postman_api, workspace_id)
+    # check content and update as needed
+    # TODO
+    return manager

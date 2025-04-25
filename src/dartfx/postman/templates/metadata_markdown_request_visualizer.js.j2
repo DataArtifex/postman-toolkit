@@ -1,0 +1,107 @@
+const showdown = pm.require('npm:showdown@2.1.0');
+
+// Function to run after the response is received
+const template = (content) => {
+    // Set up the HTML template with Showdown library from CDN
+    return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Markdown Rendered</title>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
+        <style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+                line-height: 1.6;
+                color: #333;
+                max-width: 900px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+            pre {
+                background-color: #f6f8fa;
+                border-radius: 3px;
+                padding: 16px;
+                overflow: auto;
+            }
+            code {
+                background-color: #f6f8fa;
+                border-radius: 3px;
+                padding: 0.2em 0.4em;
+                font-family: SFMono-Regular, Consolas, "Liberation Mono", Menlo, monospace;
+            }
+            blockquote {
+                border-left: 4px solid #dfe2e5;
+                color: #6a737d;
+                padding: 0 1em;
+                margin: 0;
+            }
+            table {
+                border-collapse: collapse;
+                width: 100%;
+                margin-bottom: 16px;
+            }
+            table, th, td {
+                border: 1px solid #dfe2e5;
+            }
+            th, td {
+                padding: 8px 16px;
+                text-align: left;
+            }
+            th {
+                background-color: #f6f8fa;
+            }
+            img {
+                max-width: 100%;
+            }
+            a {
+                color: #0366d6;
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            h1, h2, h3, h4, h5, h6 {
+                margin-top: 24px;
+                margin-bottom: 16px;
+                font-weight: 600;
+                line-height: 1.25;
+            }
+            h1 {
+                border-bottom: 1px solid #eaecef;
+                padding-bottom: 0.3em;
+            }
+            h2 {
+                border-bottom: 1px solid #eaecef;
+                padding-bottom: 0.3em;
+            }
+            ul, ol {
+                padding-left: 2em;
+            }
+            hr {
+                height: 0.25em;
+                padding: 0;
+                margin: 24px 0;
+                background-color: #e1e4e8;
+                border: 0;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="content">${content}</div>
+    </body>
+    </html>`;
+};
+
+// Set visualizer
+const converter = new showdown.Converter({
+    tables: true,
+    tasklists: true,
+    strikethrough: true,
+    ghCodeBlocks: true,
+    emoji: true,
+    underline: true
+});
+let content = converter.makeHtml(pm.response.text());
+pm.visualizer.set(template(content));

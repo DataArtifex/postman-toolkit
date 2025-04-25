@@ -27,7 +27,7 @@
                             ]
                         },
                         "method": "GET",
-                        "description": "## Croissant\n\nReturn the dataset metadata based on the MLCommons Croissant specification. \n\nFor more information, visit [https://mlcommons.org/working-groups/data/croissant/](https://mlcommons.org/working-groups/data/croissant/) and [https://github.com/mlcommons/croissant](https://github.com/mlcommons/croissant)"
+                        "description": "## Croissant\n\nFetches dataset metadata conforming to the MLCommons Croissant specification (as JSON-LD).\n\nThe Croissant standard ensures rich, interoperable metadata for machine learning datasets.\n\n**Learn more about Croissant:**\n* Overview: [https://mlcommons.org/working-groups/data/croissant/](https://mlcommons.org/working-groups/data/croissant/)\n* Specification & Tools: [https://github.com/mlcommons/croissant](https://github.com/mlcommons/croissant)"
                     },
                     "name": "Croissant"
                 },
@@ -51,7 +51,7 @@
                             ]
                         },
                         "method": "GET",
-                        "description": "## DCAT\n\nReturn the dataset metadata based on the W3C Data Catalog standard.  \n\nFor more information, visit [https://www.w3.org/TR/vocab-dcat-3/](https://www.w3.org/TR/vocab-dcat-3/)"
+                        "description": "## DCAT\n\nFetches dataset metadata conforming to the W3C Data Catalog Vocabulary (DCAT) Version 3 specification.\n\nDCAT is an RDF vocabulary designed to enable standardized descriptions of datasets and services within data catalogs, enhancing discoverability and federation.\n\n**Reference:**\n* [Official W3C DCAT 3 Recommendation](https://www.w3.org/TR/vocab-dcat-3/)"
                     },
                     "name": "DCAT W3C"
                 },
@@ -75,7 +75,7 @@
                             ]
                         },
                         "method": "GET",
-                        "description": "## DCAT\n\nReturn the dataset metadata based on the W3C Data Catalog standard.  \n\nFor more information, visit [https://www.w3.org/TR/vocab-dcat-3/](https://www.w3.org/TR/vocab-dcat-3/)"
+                        "description": "## DCAT\n\nFetches dataset metadata conforming to the W3C Data Catalog Vocabulary (DCAT) Version 3 specification.\n\nDCAT is an RDF vocabulary designed to enable standardized descriptions of datasets and services within data catalogs, enhancing discoverability and federation.\n\n**Reference:**\n* [Official W3C DCAT 3 Recommendation](https://www.w3.org/TR/vocab-dcat-3/)"
                     },
                     "name": "DCAT W3C (turtle)"
                 },
@@ -93,7 +93,7 @@
                             ]
                         },
                         "method": "GET",
-                        "description": "## DDI Codebook\n\nDDI-Codebook (Data Documentation Initiative Codebook), also known as DDI version 2, is a metadata standard designed for describing simple survey data for exchange or archiving in the social, behavioral, and economic sciences. It's an XML-based specification that provides a structured format for documenting various aspects of research data, including variables, coding schemes, methodology, and other relevant information. DDI-Codebook is simpler compared to its counterpart DDI-Lifecycle (version 3), making it suitable for straightforward data documentation needs. It allows researchers and data archivists to create standardized, machine-readable metadata that facilitates data discovery, understanding, and reuse across different research projects and institutions\\[1\\]\\[3\\].  \n\nFor more information, visit [https://ddialliance.org/Specification/DDI-Codebook/2.5/](https://ddialliance.org/Specification/DDI-Codebook/2.5/)"
+                        "description": "## DDI Codebook\n\nRetrieves dataset metadata structured according to the DDI-Codebook (Version 2.5) specification.\n\nThis XML-based standard provides a detailed, machine-readable format for documenting survey data (variables, methodology, etc.) for exchange or archiving, primarily within social sciences.\n\n**Reference:**\n* [DDI Codebook 2.5 Specification](https://ddialliance.org/Specification/DDI-Codebook/2.5/)"
                     },
                     "name": "DDI-Codebook"
                 },
@@ -118,7 +118,7 @@
                             ]
                         },
                         "method": "GET",
-                        "description": "## DDI-CDI CDIF\n\nFor more information, visit [https://cdif.codata.org/](https://cdif.codata.org/)"
+                        "description": "## DDI-CDI CDIF\n\nReturns metadata structured according to the DDI Cross-Domain Integration (DDI-CDI) model, using the CODATA Cross-Domain Interoperability Framework (CDIF) recommended profile.\n\nDDI-CDI is designed to facilitate the integration and interoperability of data from diverse sources (e.g., surveys, administrative data, big data). \nCDIF provides a concrete serialization format for this model.\n\n**References:**\n* [DDI-CDI Overview (DDI Alliance)](https://ddialliance.org/ddi-cdi)\n* [CODATA Cross-Domain Interoperability Framework  (CDIF) Details (CODATA)](https://cdif.codata.org/)"
                     },
                     "name": "DDI-CDI CDIF"
                 },
@@ -143,13 +143,13 @@
                             ]
                         },
                         "method": "GET",
-                        "description": "## DDI-CDI CDIF\n\nFor more information, visit [https://cdif.codata.org/](https://cdif.codata.org/)"
+                        "description": "## DDI-CDI CDIF\n\nReturns metadata structured according to the DDI Cross-Domain Integration (DDI-CDI) model, using the CODATA Cross-Domain Interoperability Framework (CDIF) recommended profile.\n\nDDI-CDI is designed to facilitate the integration and interoperability of data from diverse sources (e.g., surveys, administrative data, big data). \nCDIF provides a concrete serialization format for this model.\n\n**References:**\n* [DDI-CDI Overview (DDI Alliance)](https://ddialliance.org/ddi-cdi)\n* [CODATA Cross-Domain Interoperability Framework  (CDIF) Details (CODATA)](https://cdif.codata.org/)"
                     },
                     "name": "DDI-CDI CDIF (turtle)"
                 }
             ],
             "name": "Metadata",
-            "description": "Metadata is essential for creating machine-actionable insights that drive automation, machine learning, and efficient data governance. \nHigh-quality metadata reduces the burden of data wrangling, facilitating faster, more reliable insights and enabling seamless integration of datasets across platforms. \nThe requests in this folder deliver structured metadata adhering to the following industry standards:\n\n- [Croissant](https://mlcommons.org/working-groups/data/croissant/): a leading-edge specification designed to enhance machine learning and AI workflows through standardized metadata practices\n- [DCAT](https://www.w3.org/TR/vocab-dcat-3/): the W3C's Data Catalog Vocabulary, widely used for data discovery and cataloging in open data ecosystems\n- [DDI-C](https://ddialliance.org/Specification/DDI-Codebook/2.5/): a lightweight XML-based codebook specification from the DDI Alliance that supports efficient metadata management for social, behavioral, and economic sciences\n- [DDI-CDI](https://ddialliance.org/Specification/ddi-cdi): the latest RDF-based Cross-Domain Integration specification from the DDI Alliance, enabling metadata interoperability across diverse domains   \n\nBy leveraging these standards, along with best practices, this folder supports the [FAIR principles](https://www.go-fair.org/fair-principles/) (Findable, Accessible, Interoperable, and Reusable data) and the [Cross-Domain Interoperability Framework](https://cdif.codata.org/). \nThe API endpoints are hosted by the [High-Value Data Network](https://www.highvaluedata.net) to facilitate broad, cross-functional data utility."
+            "description": "Metadata is essential for understanding datasets and enabling machine-actionable insights that drive automation, machine learning, and efficient data governance. High-quality, standardized metadata reduces the burden of data wrangling, facilitating faster, more reliable analysis and enabling seamless integration of datasets across platforms.\n\nThe requests in this folder retrieve structured metadata for datasets, adhering to several key industry standards. Each standard caters to different needs and contexts:\n\n* **[Croissant](https://mlcommons.org/working-groups/data/croissant/)**: A modern specification from MLCommons designed to describe datasets for **machine learning**, making ML workflows more efficient and reproducible.\n* **[DCAT](https://www.w3.org/TR/vocab-dcat-3/)**: The W3C's Data Catalog Vocabulary (version 3), widely used for **data discovery and cataloging**, especially in government and open data portals.\n* **[DDI-Codebook](https://ddialliance.org/Specification/DDI-Codebook/2.5/)**: An established XML-based standard (DDI Version 2.x) from the DDI Alliance, primarily used for documenting **survey data** in the social, behavioral, and economic sciences.\n* **[DDI-CDI](https://ddialliance.org/ddi-cdi)**: A newer DDI Alliance standard (DDI Cross-Domain Integration) providing a conceptual model to enable metadata **interoperability across diverse data sources** (e.g., integrating survey data with administrative or sensor data).\n\nBy leveraging these standards, the metadata provided supports the **[FAIR data principles](https://www.go-fair.org/fair-principles/)** (Findable, Accessible, Interoperable, and Reusable) and aligns with initiatives like the **[CODATA Cross-Domain Interoperability Framework (CDIF)](https://cdif.codata.org/)**.\n\nThese API endpoints are hosted by the **[High-Value Data Network](https://www.highvaluedata.net)** to facilitate broad, cross-functional data utility and understanding."
         },
         {
             "item": [
@@ -845,7 +845,7 @@
                 }
             ],
             "name": "Code Snippets",
-            "description": "This folder provides API requests that generate code snippets designed to streamline development and data science workflows.\nBy offering reusable, customizable code samples, this collection helps developers and data scientists to quickly implement standard tasks, reduce boilerplate code, and improve productivity across projects."
+            "description": "Reduce boilerplate code and cut down on data wrangling time using the API requests in this folder. These endpoints generate reusable, customizable code snippets designed to streamline common development and data science tasks. Accelerate your workflows by quickly implementing standard patterns for data querying, metadata API interaction, and boosting overall project productivity."
         },
         {
             "item": [],
@@ -853,9 +853,143 @@
             "description": "This folder contains requests to generate SQL code for loading the dataset in various database environments."
         },
         {
-            "item": [],
+            "item": [
+                {
+                    "request": {
+                        "url": {
+                            "protocol": "https",
+                            "host": "highvaluedata.net",
+                            "path": [
+                                "api",
+                                "datasets",
+                                "socrata:data.sfgov.org:vw6y-z8j6",
+                                "markdown"
+                            ]
+                        },
+                        "method": "GET",
+                        "description": "## Markdown\n\nReturns comprehensive information about a specific dataset, rendered in Markdown format. This output is suitable for general documentation purposes and as structured knowledge or instructions for LLM-based systems and agents.\n"
+                    },
+                    "name": "Markdown",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "exec": [
+                                    "const showdown = pm.require('npm:showdown@2.1.0');",
+                                    "",
+                                    "// Function to run after the response is received",
+                                    "const template = (content) => {",
+                                    "    // Set up the HTML template with Showdown library from CDN",
+                                    "    return `",
+                                    "    <!DOCTYPE html>",
+                                    "    <html>",
+                                    "    <head>",
+                                    "        <meta charset=\"UTF-8\">",
+                                    "        <title>Markdown Rendered</title>",
+                                    "        <script src=\"https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js\"></script>",
+                                    "        <style>",
+                                    "            body {",
+                                    "                font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Helvetica, Arial, sans-serif;",
+                                    "                line-height: 1.6;",
+                                    "                color: #333;",
+                                    "                max-width: 900px;",
+                                    "                margin: 0 auto;",
+                                    "                padding: 20px;",
+                                    "            }",
+                                    "            pre {",
+                                    "                background-color: #f6f8fa;",
+                                    "                border-radius: 3px;",
+                                    "                padding: 16px;",
+                                    "                overflow: auto;",
+                                    "            }",
+                                    "            code {",
+                                    "                background-color: #f6f8fa;",
+                                    "                border-radius: 3px;",
+                                    "                padding: 0.2em 0.4em;",
+                                    "                font-family: SFMono-Regular, Consolas, \"Liberation Mono\", Menlo, monospace;",
+                                    "            }",
+                                    "            blockquote {",
+                                    "                border-left: 4px solid #dfe2e5;",
+                                    "                color: #6a737d;",
+                                    "                padding: 0 1em;",
+                                    "                margin: 0;",
+                                    "            }",
+                                    "            table {",
+                                    "                border-collapse: collapse;",
+                                    "                width: 100%;",
+                                    "                margin-bottom: 16px;",
+                                    "            }",
+                                    "            table, th, td {",
+                                    "                border: 1px solid #dfe2e5;",
+                                    "            }",
+                                    "            th, td {",
+                                    "                padding: 8px 16px;",
+                                    "                text-align: left;",
+                                    "            }",
+                                    "            th {",
+                                    "                background-color: #f6f8fa;",
+                                    "            }",
+                                    "            img {",
+                                    "                max-width: 100%;",
+                                    "            }",
+                                    "            a {",
+                                    "                color: #0366d6;",
+                                    "                text-decoration: none;",
+                                    "            }",
+                                    "            a:hover {",
+                                    "                text-decoration: underline;",
+                                    "            }",
+                                    "            h1, h2, h3, h4, h5, h6 {",
+                                    "                margin-top: 24px;",
+                                    "                margin-bottom: 16px;",
+                                    "                font-weight: 600;",
+                                    "                line-height: 1.25;",
+                                    "            }",
+                                    "            h1 {",
+                                    "                border-bottom: 1px solid #eaecef;",
+                                    "                padding-bottom: 0.3em;",
+                                    "            }",
+                                    "            h2 {",
+                                    "                border-bottom: 1px solid #eaecef;",
+                                    "                padding-bottom: 0.3em;",
+                                    "            }",
+                                    "            ul, ol {",
+                                    "                padding-left: 2em;",
+                                    "            }",
+                                    "            hr {",
+                                    "                height: 0.25em;",
+                                    "                padding: 0;",
+                                    "                margin: 24px 0;",
+                                    "                background-color: #e1e4e8;",
+                                    "                border: 0;",
+                                    "            }",
+                                    "        </style>",
+                                    "    </head>",
+                                    "    <body>",
+                                    "        <div id=\"content\">${content}</div>",
+                                    "    </body>",
+                                    "    </html>`;",
+                                    "};",
+                                    "",
+                                    "// Set visualizer",
+                                    "const converter = new showdown.Converter({",
+                                    "    tables: true,",
+                                    "    tasklists: true,",
+                                    "    strikethrough: true,",
+                                    "    ghCodeBlocks: true,",
+                                    "    emoji: true,",
+                                    "    underline: true",
+                                    "});",
+                                    "let content = converter.makeHtml(pm.response.text());",
+                                    "pm.visualizer.set(template(content));"
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ],
             "name": "AI",
-            "description": "This folder contains requests to facilitate integration of the dataset with various AI platforms."
+            "description": "This folder provides requests aimed at simplifying the use of this dataset within AI platforms, supporting FAIR principles. Access AI-ready metadata and potentially formatted data excerpts to reduce data wrangling and accelerate integration with machine learning models, LLMs, and intelligent agents."
         },
         {
             "item": [],

@@ -1,6 +1,7 @@
 """
 Classes and helpers to publish Socrata data products to Postman collections.
 """
+import logging
 from pydantic import BaseModel, Field
 
 from . import templates
@@ -9,12 +10,14 @@ from dartfx.postmanapi import postman_collection
 from dartfx.socrata import SocrataServer, SocrataDataset
 
 class SocrataPostmanPublisherConfig(BaseModel):
+    """Configuration for SocrataPostmanPublisher."""
     # unicode prefixes: ⛁ ⛃ 🔢
     # More at https://www.compart.com/en/unicode/category/So
     name_prefix: str | None = Field(default=None)
     name_suffix: str | None = Field(default=None)
     
 class SocrataPostmanPublisher(BaseModel):
+    """Postman collection generator for Socrata datasets."""
     postman_api: postman.PostmanApi
     server: SocrataServer
     config: SocrataPostmanPublisherConfig = Field(default=SocrataPostmanPublisherConfig())
@@ -36,37 +39,23 @@ class SocrataPostmanPublisher(BaseModel):
             config = self.config
 
         # get the dataset
-        dataset = SocrataDataset(self.server, dataset_id)
+        dataset = SocrataDataset(server=self.server, id=dataset_id)
+        generator = SocrataPostmanCollectionGenerator(dataset=dataset, config=config)
+        generated_collection = generator.generate()
+        generated_collection_data = generated_collection.model_dump(by_alias=True, exclude_none=True)
 
         # instantiate collection manager
         if collection_id:
-            # use existing collection
-            collection_manager = postman.DataProductCollectionManager(self.postman_api, collection_id)
+            # replace existing collection
+            collection_id = self.postman_api.replace_collection(collection_id, generated_collection_data)
         elif workspace_id:
-            # create a new collection
-            collection_manager = postman.DataProductCollectionManager.factory(self.postman_api, workspace_id, dataset.id, dartfx_id=f'socrata:{dataset.server.host}:{dataset.id}')
+            # create a new collection or replace if same name already exists
+            workspace_manager = postman.WorkspaceManager(self.postman_api, workspace_id)
+            collection_id = workspace_manager.import_collection(generated_collection_data, replace=True)
         else:
             raise ValueError("Either a collection_id or workspace_id must be specified")
 
-        # collection name
-        name = f"{dataset.name} [{dataset.id}]"
-        if config.name_prefix:
-            name = f"{config.name_prefix}{name}"
-        if config.name_suffix:
-            name = f"{name}{config.name_suffix}"
-        collection_manager.name = name
-
-        # collection description
-        description = ""
-        if dataset.description:
-            description = f"## Description\n{dataset.description}\n"
-        collection_manager.description = description
-
-        # collection level variables
-        collection_manager.set_variable("host", dataset.server.host)
-        collection_manager.set_variable("baseUrl", "https://{{host}}")
-          
-        return collection_manager.id
+        return collection_id
     
 
 class SocrataPostmanCollectionGenerator(BaseModel):
@@ -74,6 +63,8 @@ class SocrataPostmanCollectionGenerator(BaseModel):
     config: SocrataPostmanPublisherConfig = Field(default=SocrataPostmanPublisherConfig())
     
     def _add_query_request_parameters(self, request: postman_collection.Request):
+        """Add query parameters that are common to all Socrata data requests.
+        """
         request.url.create_query_parameter('$select',description="The set of columns to be returned, similar to a SELECT in SQL. Default: All columns, equivalent to $select=*.", disabled=True)
         request.url.create_query_parameter('$where',None, "Filters the rows to be returned, similar to WHERE. No default value.", True)
         request.url.create_query_parameter('$order',None, "Column to order results on, similar to ORDER BY in SQL. Default is unspecified order.", True)
@@ -110,15 +101,15 @@ class SocrataPostmanCollectionGenerator(BaseModel):
         metadata_folder = templates.get_metadata_folder()
         collection.item.append(metadata_folder)
         
-        base_url = f"https://highvaluedata.net/api/datasets/socrata:{dataset.server.host}:{dataset.id}"
+        hvdnet_base_url = f"https://highvaluedata.net/api/datasets/socrata:{dataset.server.host}:{dataset.id}"
 
         # Metadata requests
-        metadata_folder.item.append(templates.get_croissant_request(base_url))
-        metadata_folder.item.append(templates.get_dcat_request(base_url))
-        metadata_folder.item.append(templates.get_dcat_request(base_url, format='turtle'))
-        metadata_folder.item.append(templates.get_ddi_codebook_request(base_url))
-        metadata_folder.item.append(templates.get_ddi_cdif_request(base_url))
-        metadata_folder.item.append(templates.get_ddi_cdif_request(base_url, format='turtle'))
+        metadata_folder.item.append(templates.get_croissant_request(hvdnet_base_url))
+        metadata_folder.item.append(templates.get_dcat_request(hvdnet_base_url))
+        metadata_folder.item.append(templates.get_dcat_request(hvdnet_base_url, format='turtle'))
+        metadata_folder.item.append(templates.get_ddi_codebook_request(hvdnet_base_url))
+        metadata_folder.item.append(templates.get_ddi_cdif_request(hvdnet_base_url))
+        metadata_folder.item.append(templates.get_ddi_cdif_request(hvdnet_base_url, format='turtle'))
 
         # DATA FOLDER
         data_folder = templates.get_data_folder()
@@ -156,7 +147,7 @@ class SocrataPostmanCollectionGenerator(BaseModel):
         for language in languages:
             item = postman_collection.Item()
             item.name = language["name"]
-            item.create_request(f"{base_url}/code/{language['path']}")
+            item.create_request(f"{hvdnet_base_url}/code/{language['path']}")
             self._add_query_request_parameters(item.request)
             code_folder.item.append(item)
 
@@ -167,6 +158,8 @@ class SocrataPostmanCollectionGenerator(BaseModel):
         # AI FOLDER
         ai_folder = templates.get_ai_folder()
         collection.item.append(ai_folder)
+        ai_folder.item.append(templates.get_markdown_request(hvdnet_base_url))
+
 
         # VISUALIZATION FOLDER
         dv_folder = templates.get_visualization_folder()
@@ -177,3 +170,6 @@ class SocrataPostmanCollectionGenerator(BaseModel):
         collection.variable.append(postman_collection.Variable(id="socrataId", value=dataset.id))
 
         return collection
+    
+
+   

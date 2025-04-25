@@ -6,7 +6,6 @@ import pytest
 from dartfx.postmanapi import postman
 from dartfx.socrata import SocrataServer
 
-
 @pytest.fixture(scope="session", autouse=True)
 def test_dir(): 
     return Path(__file__).parent
@@ -16,6 +15,9 @@ def load_env():
     dotenv_path = Path(__file__).parent / ".env"  # Construct path from current test file dir
     load_dotenv(dotenv_path=dotenv_path)
 
+#
+# POSTMAN
+#
 @pytest.fixture(scope="session")
 def postman_api_key():
     key = os.environ.get('DARTFX_POSTMAN_API_KEY')
@@ -34,6 +36,10 @@ def postman_workspace(postman_api):
     ws = postman.WorkspaceManager(postman_api, id)
     return ws
 
+#
+# SOCRATA
+#
+
 @pytest.fixture(scope="module")
 def socrata_cache_root(test_dir):    
     return os.path.join(test_dir,'socrata')
@@ -45,4 +51,10 @@ def socrata_sfo_server(socrata_cache_root):
 @pytest.fixture(scope="module")
 def socrata_yyc_server(socrata_cache_root):
     return SocrataServer(host="data.calgary.ca", disk_cache_root=socrata_cache_root)
+
+@pytest.fixture(scope="module")
+def socrata_sfo_workspace(postman_api):
+    id = os.environ.get('DARTFX_POSTMAN_WS_SOCRATA_SFO')
+    ws = postman.WorkspaceManager(postman_api, id)
+    return ws
 
