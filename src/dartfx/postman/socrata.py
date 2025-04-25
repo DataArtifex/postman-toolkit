@@ -65,7 +65,8 @@ class SocrataPostmanCollectionGenerator(BaseModel):
     def _add_query_request_parameters(self, request: postman_collection.Request):
         """Add query parameters that are common to all Socrata data requests.
         """
-        request.url.create_query_parameter('$select',description="The set of columns to be returned, similar to a SELECT in SQL. Default: All columns, equivalent to $select=*.", disabled=True)
+        param = request.url.create_query_parameter('$select',description="The set of columns to be returned, similar to a SELECT in SQL. Default: All columns, equivalent to $select=* (which includes computed variables whose names start with @).", disabled=False)
+        param.value = ",".join(self.dataset.get_visible_variables_names()) # make sure only visible variables are selected by default
         request.url.create_query_parameter('$where',None, "Filters the rows to be returned, similar to WHERE. No default value.", True)
         request.url.create_query_parameter('$order',None, "Column to order results on, similar to ORDER BY in SQL. Default is unspecified order.", True)
         request.url.create_query_parameter('$group',None, "Column to group results on, similar to GROUP BY in SQL. Default is no grouping.", True)
