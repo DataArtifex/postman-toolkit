@@ -2,6 +2,7 @@
 Classes and helpers to publish Socrata data products to Postman collections.
 """
 import logging
+from typing import Optional
 from pydantic import BaseModel, Field
 
 from . import templates
@@ -26,7 +27,7 @@ class SocrataPostmanPublisher(BaseModel):
         "arbitrary_types_allowed": True # for postman.PostmanApi
     }
 
-    def publish_dataset(self, dataset_id:str, workspace_id:str=None, collection_id:str=None, config:"SocrataPostmanPublisherConfig" = None) -> str:
+    def publish_dataset(self, dataset_id:str, workspace_id:str|None=None, collection_id:str|None=None, config:Optional[SocrataPostmanPublisherConfig] = None) -> str:
         """Publish a dataset as a collection under an existing workspace.
         
         If collection_id is specified, its content will be replaced (but the collection id remains the same).
@@ -65,6 +66,8 @@ class SocrataPostmanCollectionGenerator(BaseModel):
     def _add_query_request_parameters(self, request: postman_collection.Request):
         """Add query parameters that are common to all Socrata data requests.
         """
+        if request.url is None or isinstance(request.url, str):
+            request.url = postman_collection.URL()
         param = request.url.create_query_parameter('$select',description="The set of columns to be returned, similar to a SELECT in SQL. Default: All columns, equivalent to $select=* (which includes computed variables whose names start with @).", disabled=False)
         param.value = ",".join(self.dataset.get_visible_variables_names()) # make sure only visible variables are selected by default
         request.url.create_query_parameter('$where',None, "Filters the rows to be returned, similar to WHERE. No default value.", True)
@@ -99,7 +102,7 @@ class SocrataPostmanCollectionGenerator(BaseModel):
         metadata_folder = templates.get_metadata_folder()
         collection.item.append(metadata_folder)
         
-        hvdnet_base_url = f"https://highvaluedata.net/api/datasets/socrata:{dataset.server.host}:{dataset.id}"
+        hvdnet_base_url = f"https://api.highvaluedata.net/datasets/socrata:{dataset.server.host}:{dataset.id}"
 
         # Metadata requests
         metadata_folder.item.append(templates.get_croissant_request(hvdnet_base_url))
@@ -157,7 +160,6 @@ class SocrataPostmanCollectionGenerator(BaseModel):
         ai_folder = templates.get_ai_folder()
         collection.item.append(ai_folder)
         ai_folder.item.append(templates.get_markdown_request(hvdnet_base_url))
-
 
         # VISUALIZATION FOLDER
         dv_folder = templates.get_visualization_folder()
