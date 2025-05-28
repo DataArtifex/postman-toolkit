@@ -1,31 +1,18 @@
-from dataclasses import dataclass, field
+from . import templates
 from dartfx.mtnards import MtnaRdsServer
 from dartfx.postmanapi import PostmanApi
+from pydantic import BaseModel, Field, PrivateAttr
 
 
-@dataclass
-class MtnaRdsPostmanPublisherConfig():
-    name_prefix: str = field(default=None)
-    name_suffix: str = field(default=None)
+class MtnaRdsPostmanPublisherConfig(BaseModel):
+    name_prefix: str | None = Field(default=None)
+    name_suffix: str | None = Field(default=None)
 
-class MtnaRdsPostmanPublisher():
-    _rds_server: MtnaRdsServer
-    _postman_api: PostmanApi
-    _temp_workspace_id: str = None # if set can be used for importing temporary collections
+class MtnaRdsPostmanPublisher(BaseModel):
+    rds_server: MtnaRdsServer
+    postman_api: PostmanApi
+    temp_workspace_id: str|None = None # if set can be used for importing temporary collections
 
-    def __init__(self, api: PostmanApi, rds_server: MtnaRdsServer, temp_workspace_id=None):
-        self._postman_api = api
-        self._rds_server = rds_server
-        self._temp_workspace_id = temp_workspace_id
-
-    @property
-    def rds_server(self):
-        return self._rds_server
-    
-    @property
-    def postman_api(self):
-        return self._postman_api
-    
     def publish_data_product_to_workspace(self, catalog_id, data_product_id, workspace_id):
         """Publish a data product under an existing workspace"""
         collection = self.rds_server.get_postman_collection(catalog_id, data_product_id)
@@ -36,8 +23,8 @@ class MtnaRdsPostmanPublisher():
         """Published a data product under an existing collection or folder"""
         # initialize temporary workspace
         if not temp_workspace_id:
-            if self._temp_workspace_id:
-                temp_workspace_id = self._temp_workspace_id
+            if self.temp_workspace_id:
+                temp_workspace_id = self.temp_workspace_id
             else:
                 raise ValueError("No temporary workspace ID provided")
         # get the RDS collection
@@ -97,3 +84,4 @@ class MtnaRdsPostmanPublisher():
         for item in collection['collection']['item']:
             uids.append(item['uid'])
         return uids
+    
