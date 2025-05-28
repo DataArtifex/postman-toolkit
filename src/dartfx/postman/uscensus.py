@@ -117,7 +117,7 @@ class PostmanCollectionGenerator():
         metadata_folder = templates.get_metadata_folder()
         collection.item.append(metadata_folder)
         
-        base_url = f"https://highvaluedata.net/api/datasets/socrata:{dataset.server.host}:{dataset.id}"
+        base_url = f"https://highvaluedata.net/api/datasets/uscensus:api.census.gov:{dataset.id}"
 
         # Metadata requests
         metadata_folder.item.append(templates.get_croissant_request(base_url))
@@ -132,18 +132,12 @@ class PostmanCollectionGenerator():
         collection.item.append(data_folder)
 
         # Query Data Request (JSON)
-        item = postman_collection.Item()
-        item.name = "Query Data (JSON)"
-        item.request = item.create_request(f"https://{dataset.server.host}/resource/{dataset.id}.json")
-        self._add_query_request_parameters(item.request)
-        data_folder.item.append(item)
+        #item = postman_collection.Item()
+        #item.name = "Query Data (JSON)"
+        #item.request = item.create_request(f"https://{dataset.server.host}/resource/{dataset.id}.json")
+        #self._add_query_request_parameters(item.request)
+        #data_folder.item.append(item)
 
-        # Query Data Request (CSV)
-        item = postman_collection.Item()
-        item.name = "Query Data (CSV)"
-        item.request = item.create_request(f"https://{dataset.server.host}/resource/{dataset.id}.csv")
-        self._add_query_request_parameters(item.request)
-        data_folder.item.append(item)
 
         # CODE FOLDER
         code_folder = templates.get_code_folder()
@@ -160,27 +154,20 @@ class PostmanCollectionGenerator():
             {"name": "Stata", "path": "stata"},
         ]
 
-        for language in languages:
-            item = postman_collection.Item()
-            item.name = language["name"]
-            item.create_request(f"{base_url}/code/{language['path']}")
-            self._add_query_request_parameters(item.request)
-            code_folder.item.append(item)
-
-        # SQL FOLDER
-        sql_folder = templates.get_sql_folder()
-        collection.item.append(sql_folder)
+        #for language in languages:
+        #    item = postman_collection.Item()
+        #    item.name = language["name"]
+        #    item.create_request(f"{base_url}/code/{language['path']}")
+        #    self._add_query_request_parameters(item.request)
+        #    code_folder.item.append(item)
 
         # AI FOLDER
         ai_folder = templates.get_ai_folder()
         collection.item.append(ai_folder)
 
-        # VISUALIZATION FOLDER
-        dv_folder = templates.get_visualization_folder()
-        collection.item.append(dv_folder)
-
         # COLLECTION VARIABLES
         collection.variable = []
-        collection.variable.append(postman_collection.Variable(id="socrataId", value=dataset.id))
+        collection.variable.append(postman_collection.Variable(id="platformId", value=dataset.id))
+        collection.variable.append(postman_collection.Variable(id="hvdnetUri", value=f"uscensus:api.{dataset.id}"))
 
         return collection

@@ -1,6 +1,8 @@
+{% include "header.md" %}
+
 Metadata is essential for understanding datasets and enabling machine-actionable insights that drive automation, machine learning, and efficient data governance. High-quality, standardized metadata reduces the burden of data wrangling, facilitating faster, more reliable analysis and enabling seamless integration of datasets across platforms.
 
-The requests in this folder retrieve structured metadata for datasets, adhering to several key industry standards. Each standard caters to different needs and contexts:
+The requests in this folder retrieve structured metadata for this datasets, adhering to several key industry standards. Each standard caters to different needs and contexts:
 
 * **[Croissant](https://mlcommons.org/working-groups/data/croissant/)**: A modern specification from MLCommons designed to describe datasets for **machine learning**, making ML workflows more efficient and reproducible.
 * **[DCAT](https://www.w3.org/TR/vocab-dcat-3/)**: The W3C's Data Catalog Vocabulary (version 3), widely used for **data discovery and cataloging**, especially in government and open data portals.
@@ -9,4 +11,8 @@ The requests in this folder retrieve structured metadata for datasets, adhering 
 
 By leveraging these standards, the metadata provided supports the **[FAIR data principles](https://www.go-fair.org/fair-principles/)** (Findable, Accessible, Interoperable, and Reusable) and aligns with initiatives like the **[CODATA Cross-Domain Interoperability Framework (CDIF)](https://cdif.codata.org/)**.
 
+Additional requests platform specific metadata may also be included.
+
 These API endpoints are hosted by the **[High-Value Data Network](https://www.highvaluedata.net)** to facilitate broad, cross-functional data utility and understanding.
+
+{% include "footer.md" %}

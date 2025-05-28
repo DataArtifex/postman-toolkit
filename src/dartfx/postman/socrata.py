@@ -43,7 +43,7 @@ class SocrataPostmanPublisher(BaseModel):
         dataset = SocrataDataset(server=self.server, id=dataset_id)
         generator = SocrataPostmanCollectionGenerator(dataset=dataset, config=config)
         generated_collection = generator.generate()
-        generated_collection_data = generated_collection.model_dump(by_alias=True, exclude_none=True)
+        generated_collection_data = generated_collection.to_dict()
 
         # instantiate collection manager
         if collection_id:
@@ -95,8 +95,9 @@ class SocrataPostmanCollectionGenerator(BaseModel):
             name = f"{name}{config.name_suffix}"
         collection.info.name = name
 
-        # collection description    
-        collection.info.description = dataset.get_markdown()
+        # collection description
+
+        collection.info.description = templates.get_collection_description(markdown=dataset.get_markdown())
 
         # Metadata Folder
         metadata_folder = templates.get_metadata_folder()
@@ -111,9 +112,10 @@ class SocrataPostmanCollectionGenerator(BaseModel):
         metadata_folder.item.append(templates.get_ddi_codebook_request(hvdnet_base_url))
         metadata_folder.item.append(templates.get_ddi_cdif_request(hvdnet_base_url))
         metadata_folder.item.append(templates.get_ddi_cdif_request(hvdnet_base_url, format='turtle'))
+        metadata_folder.item.append(templates.get_socrata_request(hvdnet_base_url))
 
         # DATA FOLDER
-        data_folder = templates.get_data_folder()
+        data_folder = templates.get_data_folder(platform="socrata")
         collection.item.append(data_folder)
 
         # Query Data Request (JSON)
@@ -153,8 +155,8 @@ class SocrataPostmanCollectionGenerator(BaseModel):
             code_folder.item.append(item)
 
         # SQL FOLDER
-        sql_folder = templates.get_sql_folder()
-        collection.item.append(sql_folder)
+        #sql_folder = templates.get_sql_folder()
+        #collection.item.append(sql_folder)
 
         # AI FOLDER
         ai_folder = templates.get_ai_folder()
@@ -162,12 +164,13 @@ class SocrataPostmanCollectionGenerator(BaseModel):
         ai_folder.item.append(templates.get_markdown_request(hvdnet_base_url))
 
         # VISUALIZATION FOLDER
-        dv_folder = templates.get_visualization_folder()
-        collection.item.append(dv_folder)
+        #dv_folder = templates.get_visualization_folder()
+        #collection.item.append(dv_folder)
 
         # COLLECTION VARIABLES
         collection.variable = []
-        collection.variable.append(postman_collection.Variable(id="socrataId", value=dataset.id))
+        collection.variable.append(postman_collection.Variable(id="platformId", value=dataset.id))
+        collection.variable.append(postman_collection.Variable(id="hvdnetUri", value=f'socrata:{dataset.server.host}:{dataset.id}'))
 
         return collection
     

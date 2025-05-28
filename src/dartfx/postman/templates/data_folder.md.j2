@@ -1,1 +1,11 @@
+{% include "header.md" %}
+
 This folder contains request to query the dataset using the host platform API.
+
+{% if platform == "socrata" %}
+
+This dataset is powered by [Socrata / Data Insights](https://www.tylertech.com/products/data-insights). Visit the [Developer Portal](https://dev.socrata.com/) for complete documentation on the API. 
+
+{% endif %}
+
+{% include "footer.md" %}

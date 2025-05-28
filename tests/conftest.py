@@ -5,6 +5,7 @@ import pytest
 
 from dartfx.postmanapi import postman
 from dartfx.socrata import SocrataServer
+from dartfx.uscensus import UsCensusApi, UsCensusCatalog
 
 @pytest.fixture(scope="session", autouse=True)
 def test_dir(): 
@@ -55,6 +56,20 @@ def socrata_yyc_server(socrata_cache_root):
 @pytest.fixture(scope="module")
 def socrata_sfo_workspace(postman_api):
     id = os.environ.get('DARTFX_POSTMAN_WS_SOCRATA_SFO')
-    ws = postman.WorkspaceManager(postman_api, id)
-    return ws
+    if id:
+        ws = postman.WorkspaceManager(api=postman_api, id=id)
+        return ws
 
+
+#
+# U.S. Census
+#
+
+@pytest.fixture(scope="module")
+def uscensus_api():
+    return UsCensusApi()
+
+
+@pytest.fixture(scope="module")
+def uscensus_server(api):
+    return UsCensusCatalog(api=api)
