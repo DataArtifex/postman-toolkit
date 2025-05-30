@@ -169,7 +169,7 @@ class SocrataPostmanCollectionGenerator(BaseModel):
 
         # COLLECTION VARIABLES
         collection.variable = []
-        collection.variable.append(postman_collection.Variable(id="platformId", value=dataset.id))
+        collection.variable.append(postman_collection.Variable(id="socrataId", value=dataset.id))
         collection.variable.append(postman_collection.Variable(id="hvdnetUri", value=f'socrata:{dataset.server.host}:{dataset.id}'))
 
         return collection

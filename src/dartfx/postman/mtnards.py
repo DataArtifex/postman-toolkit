@@ -1,21 +1,31 @@
+import logging
+from typing import Optional, Union
 from . import templates
-from dartfx.mtnards import MtnaRdsServer
-from dartfx.postmanapi import PostmanApi
+from dartfx.mtnards import MtnaRdsServer, MtnaRdsDataProduct
+from dartfx.postmanapi import PostmanApi, WorkspaceManager
+from dartfx.postmanapi import postman_collection
+
 from pydantic import BaseModel, Field, PrivateAttr
 
 
 class MtnaRdsPostmanPublisherConfig(BaseModel):
     name_prefix: str | None = Field(default=None)
     name_suffix: str | None = Field(default=None)
+    include_rds_collection: bool = Field(default=False) # includes the RDS generated Postman collection (requires management API key)
 
 class MtnaRdsPostmanPublisher(BaseModel):
-    rds_server: MtnaRdsServer
     postman_api: PostmanApi
+    server: MtnaRdsServer
+    config: MtnaRdsPostmanPublisherConfig = Field(default=MtnaRdsPostmanPublisherConfig())
     temp_workspace_id: str|None = None # if set can be used for importing temporary collections
+
+    model_config = {
+        "arbitrary_types_allowed": True # for postman.PostmanApi
+    }
 
     def publish_data_product_to_workspace(self, catalog_id, data_product_id, workspace_id):
         """Publish a data product under an existing workspace"""
-        collection = self.rds_server.get_postman_collection(catalog_id, data_product_id)
+        collection = self.server.get_postman_collection(catalog_id, data_product_id)
         collection_id = self.postman_api.import_collection(workspace_id, collection)
         return collection_id
 
@@ -28,7 +38,7 @@ class MtnaRdsPostmanPublisher(BaseModel):
             else:
                 raise ValueError("No temporary workspace ID provided")
         # get the RDS collection
-        rds_collection = self.rds_server.get_postman_collection(catalog_id, data_product_id)
+        rds_collection = self.server.get_postman_collection(catalog_id, data_product_id)
         # publish in a temporary workspace
         temp_collection_id = self.publish_data_product_to_workspace(catalog_id, data_product_id, temp_workspace_id)
         temp_collection = self.postman_api.get_collection(temp_collection_id)
@@ -84,4 +94,217 @@ class MtnaRdsPostmanPublisher(BaseModel):
         for item in collection['collection']['item']:
             uids.append(item['uid'])
         return uids
+
+    def publish_catalog(self, catalog_id, workspace_id):
+        collection = postman_collection.Collection()
+        return collection
+
+    def publish_data_product(self, catalog_id:str, data_product_id:str, workspace_id:str|None=None, collection_id:str|None=None, config:Optional[MtnaRdsPostmanPublisherConfig] = None) -> str:
+        """Publish a data product as a collection under an existing workspace.
+        
+        If collection_id is specified, its content will be replaced (but the collection id remains the same).
+        If both workspace_id and collection_id are provided, collection_id takes precedence, and the collection will be replaced.
+        Otherwise, workspace_id must be specified and a new collection will be created.
+
+        """
+        # Ensure at least one of workspace_id or collection_id is provided
+        if not workspace_id and not collection_id:
+            raise ValueError("Either a workspace_id or collection_id must be provided")
+
+        # use default config if not specified
+        if config is None:
+            config = self.config
+
+        catalog = self.server.get_catalog_by_id(catalog_id)
+        if catalog is None:
+            raise ValueError(f"Catalog {catalog_id} not found")
+        data_product = catalog.get_data_product_by_id(data_product_id)
+        if data_product is None:
+            raise ValueError(f"Data product {data_product_id} not found")
+
+        # create collection
+        collection = postman_collection.Collection()
+        
+        # name    
+        name = f"{config.name_prefix or ''}{data_product.name} [{data_product.id}]{config.name_suffix or ''}"
+        collection.info.name = name
+        
+        # description
+        collection.info.description = templates.get_collection_description(markdown=data_product.get_markdown())
     
+        # populate collection items
+        self._publish_data_product_in_item(data_product, config, collection.item)
+
+        # COLLECTION VARIABLES
+        collection.variable = []
+        collection.variable.append(postman_collection.Variable(id="platformType", value='mtnards'))
+        collection.variable.append(postman_collection.Variable(id="mtnardsCatalogId", value=data_product.catalog_id))
+        collection.variable.append(postman_collection.Variable(id="mtnardsDataProductId", value=data_product.id))
+        collection.variable.append(postman_collection.Variable(id="hvdnetUri", value=f'mtnards:{self.server.hostname}:{data_product.catalog_id}:{data_product.id}'))
+
+        # import the collection
+        collection_dict = collection.to_dict()
+        if collection_id:
+            # replace existing collection
+            collection_id = self.postman_api.replace_collection(collection_id, collection_dict)
+        elif workspace_id:
+            # create a new collection or replace if same name already exists
+            workspace_manager = WorkspaceManager(self.postman_api, workspace_id)
+            collection_id = workspace_manager.import_collection(collection_dict, replace=True)
+        else:
+            raise ValueError("Either a collection_id or workspace_id must be specified")
+
+        return collection_id
+
+    def _publish_data_product_in_item(self, data_product: MtnaRdsDataProduct, config: MtnaRdsPostmanPublisherConfig, item: list[Union[postman_collection.Item,postman_collection.ItemGroup]]) -> None:
+        
+        # initialize
+        hvdnet_base_url = f"https://api.highvaluedata.net/datasets/mtnards:{self.server.hostname}:{data_product.catalog_id}:{data_product.id}"
+
+        # METADATA FOLDER
+        metadata_folder = templates.get_metadata_folder()
+        item.append(metadata_folder)
+        
+        # Metadata requests
+        metadata_folder.item.append(templates.get_croissant_request(hvdnet_base_url))
+        metadata_folder.item.append(templates.get_dcat_request(hvdnet_base_url))
+        metadata_folder.item.append(templates.get_dcat_request(hvdnet_base_url, format='turtle'))
+        metadata_folder.item.append(templates.get_ddi_codebook_request(hvdnet_base_url))
+        metadata_folder.item.append(templates.get_ddi_cdif_request(hvdnet_base_url))
+        metadata_folder.item.append(templates.get_ddi_cdif_request(hvdnet_base_url, format='turtle'))
+        #metadata_folder.item.append(templates.get_mtnards_request(hvdnet_base_url))
+
+        # DATA FOLDER
+        data_folder = templates.get_data_folder(platform="mtnards")
+        item.append(data_folder)
+
+        # CODE FOLDER
+        code_folder = templates.get_code_folder(platform="mtnards")
+        item.append(code_folder)
+
+        # AI FOLDER
+        ai_folder = templates.get_ai_folder()
+        item.append(ai_folder)
+        ai_folder.item.append(templates.get_markdown_request(hvdnet_base_url))
+
+        # MTNA FOLDER
+        if config.include_rds_collection:
+            if self.server.api_key:
+                try:
+                    mtna_collection_data = data_product.get_postman_collection()
+                    if mtna_collection_data:
+                        # convert to a postman collection
+                        mtna_collection = postman_collection.Collection.from_dict(mtna_collection_data)
+                        # Remove the 'id' attribute on the requests, otherwise this fails to import through the Postman API
+                        # This does not seem to be an issue with request event scripts
+                        for mtna_folders in mtna_collection.item: # iterate the top level folders
+                            for mtna_request in mtna_folders.item:
+                                mtna_request.id = None
+                        # create and populate folder
+                        mtna_folder = templates.get_mtnards_folder(markdown=mtna_collection.info.description.content)
+                        mtna_folder.item = mtna_collection.item
+                        # add folder to collection
+                        item.append(mtna_folder)
+                except Exception as e:
+                    logging.warning(f"Failed to get MTNA RDS collection: {e}")
+            else:
+                logging.warning("No API key provided. Skipping MTNA RDS collection.")
+
+class MtnaRdsPostmanCollectionGenerator(BaseModel):
+    dataset: MtnaRdsDataProduct
+    config: MtnaRdsPostmanPublisherConfig = Field(default=MtnaRdsPostmanPublisherConfig())
+    
+    def generate(self) -> postman_collection.Collection:
+        collection = postman_collection.Collection()
+        dataset = self.dataset
+        config = self.config
+
+        # collection name
+        name = f"{dataset.name} [{dataset.id}]"
+        if config.name_prefix:
+            name = f"{config.name_prefix}{name}"
+        if config.name_suffix:
+            name = f"{name}{config.name_suffix}"
+        collection.info.name = name
+
+        # collection description
+
+        collection.info.description = templates.get_collection_description(markdown=dataset.get_markdown())
+
+        # Metadata Folder
+        metadata_folder = templates.get_metadata_folder()
+        collection.item.append(metadata_folder)
+        
+        hvdnet_base_url = f"https://api.highvaluedata.net/datasets/socrata:{dataset.server.host}:{dataset.id}"
+
+        # Metadata requests
+        metadata_folder.item.append(templates.get_croissant_request(hvdnet_base_url))
+        metadata_folder.item.append(templates.get_dcat_request(hvdnet_base_url))
+        metadata_folder.item.append(templates.get_dcat_request(hvdnet_base_url, format='turtle'))
+        metadata_folder.item.append(templates.get_ddi_codebook_request(hvdnet_base_url))
+        metadata_folder.item.append(templates.get_ddi_cdif_request(hvdnet_base_url))
+        metadata_folder.item.append(templates.get_ddi_cdif_request(hvdnet_base_url, format='turtle'))
+        metadata_folder.item.append(templates.get_socrata_request(hvdnet_base_url))
+
+        # DATA FOLDER
+        data_folder = templates.get_data_folder(platform="socrata")
+        collection.item.append(data_folder)
+
+        # Query Data Request (JSON)
+        item = postman_collection.Item()
+        item.name = "Query Data (JSON)"
+        item.request = item.create_request(f"https://{dataset.server.host}/resource/{dataset.id}.json")
+        self._add_query_request_parameters(item.request)
+        data_folder.item.append(item)
+
+        # Query Data Request (CSV)
+        item = postman_collection.Item()
+        item.name = "Query Data (CSV)"
+        item.request = item.create_request(f"https://{dataset.server.host}/resource/{dataset.id}.csv")
+        self._add_query_request_parameters(item.request)
+        data_folder.item.append(item)
+
+        # CODE FOLDER
+        code_folder = templates.get_code_folder(platform="socrata")
+        collection.item.append(code_folder)
+
+        languages = [
+            {"name": "JQuery", "path": "jquery"},
+            {"name": "Python Pandas", "path": "python-pandas"},
+            {"name": "Powershell", "path": "powershell"},
+            {"name": "R Socrata", "path": "r-socrata"},
+            {"name": "SAS", "path": "sas"},
+            {"name": "SODA Ruby", "path": "soda-ruby"},
+            {"name": "SODA .NET", "path": "soda-dotnet"},
+            {"name": "Stata", "path": "stata"},
+        ]
+
+        for language in languages:
+            item = postman_collection.Item()
+            item.name = language["name"]
+            item.create_request(f"{hvdnet_base_url}/code/{language['path']}")
+            self._add_query_request_parameters(item.request)
+            code_folder.item.append(item)
+
+        # SQL FOLDER
+        #sql_folder = templates.get_sql_folder()
+        #collection.item.append(sql_folder)
+
+        # AI FOLDER
+        ai_folder = templates.get_ai_folder()
+        collection.item.append(ai_folder)
+        ai_folder.item.append(templates.get_markdown_request(hvdnet_base_url))
+
+        # VISUALIZATION FOLDER
+        #dv_folder = templates.get_visualization_folder()
+        #collection.item.append(dv_folder)
+
+        # COLLECTION VARIABLES
+        collection.variable = []
+        collection.variable.append(postman_collection.Variable(id="platformId", value=dataset.id))
+        collection.variable.append(postman_collection.Variable(id="hvdnetUri", value=f'socrata:{dataset.server.host}:{dataset.id}'))
+
+        return collection
+    
+
+   
