@@ -120,12 +120,12 @@ class PostmanCollectionGenerator():
         base_url = f"https://highvaluedata.net/api/datasets/uscensus:api.census.gov:{dataset.id}"
 
         # Metadata requests
-        metadata_folder.item.append(templates.get_croissant_request(base_url))
-        metadata_folder.item.append(templates.get_dcat_request(base_url))
-        metadata_folder.item.append(templates.get_dcat_request(base_url, format='turtle'))
-        metadata_folder.item.append(templates.get_ddi_codebook_request(base_url))
-        metadata_folder.item.append(templates.get_ddi_cdif_request(base_url))
-        metadata_folder.item.append(templates.get_ddi_cdif_request(base_url, format='turtle'))
+        metadata_folder.item.append(templates.get_hvdnet_croissant_request(base_url))
+        metadata_folder.item.append(templates.get_hvdnet_dcat_request(base_url))
+        metadata_folder.item.append(templates.get_hvdnet_dcat_request(base_url, format='turtle'))
+        metadata_folder.item.append(templates.get_hvdnet_ddi_codebook_request(base_url))
+        metadata_folder.item.append(templates.get_hvdnet_ddi_cdif_request(base_url))
+        metadata_folder.item.append(templates.get_hvdnet_ddi_cdif_request(base_url, format='turtle'))
 
         # DATA FOLDER
         data_folder = templates.get_data_folder()

@@ -80,7 +80,6 @@ class SocrataPostmanCollectionGenerator(BaseModel):
         request.url.create_query_parameter('$query',None, "A full SoQL query string, all as one parameter.", True)
         request.url.create_query_parameter('$bom',None, "Prepends a UTF-8 Byte Order Mark to the beginning of CSV output. Default is False", True)
         return
-        
 
     def generate(self) -> postman_collection.Collection:
         collection = postman_collection.Collection()
@@ -106,13 +105,13 @@ class SocrataPostmanCollectionGenerator(BaseModel):
         hvdnet_base_url = f"https://api.highvaluedata.net/datasets/socrata:{dataset.server.host}:{dataset.id}"
 
         # Metadata requests
-        metadata_folder.item.append(templates.get_croissant_request(hvdnet_base_url))
-        metadata_folder.item.append(templates.get_dcat_request(hvdnet_base_url))
-        metadata_folder.item.append(templates.get_dcat_request(hvdnet_base_url, format='turtle'))
-        metadata_folder.item.append(templates.get_ddi_codebook_request(hvdnet_base_url))
-        metadata_folder.item.append(templates.get_ddi_cdif_request(hvdnet_base_url))
-        metadata_folder.item.append(templates.get_ddi_cdif_request(hvdnet_base_url, format='turtle'))
-        metadata_folder.item.append(templates.get_socrata_request(hvdnet_base_url))
+        metadata_folder.item.append(templates.get_hvdnet_croissant_request(hvdnet_base_url))
+        metadata_folder.item.append(templates.get_hvdnet_dcat_request(hvdnet_base_url))
+        metadata_folder.item.append(templates.get_hvdnet_dcat_request(hvdnet_base_url, format='turtle'))
+        metadata_folder.item.append(templates.get_hvdnet_ddi_codebook_request(hvdnet_base_url))
+        metadata_folder.item.append(templates.get_hvdnet_ddi_cdif_request(hvdnet_base_url))
+        metadata_folder.item.append(templates.get_hvdnet_ddi_cdif_request(hvdnet_base_url, format='turtle'))
+        metadata_folder.item.append(templates.get_hvdnet_socrata_request(hvdnet_base_url))
 
         # DATA FOLDER
         data_folder = templates.get_data_folder(platform="socrata")

@@ -163,20 +163,73 @@ class MtnaRdsPostmanPublisher(BaseModel):
 
         # METADATA FOLDER
         metadata_folder = templates.get_metadata_folder()
+        metadata_folder.name = "Metadata (standards)"
         item.append(metadata_folder)
         
-        # Metadata requests
-        metadata_folder.item.append(templates.get_croissant_request(hvdnet_base_url))
-        metadata_folder.item.append(templates.get_dcat_request(hvdnet_base_url))
-        metadata_folder.item.append(templates.get_dcat_request(hvdnet_base_url, format='turtle'))
-        metadata_folder.item.append(templates.get_ddi_codebook_request(hvdnet_base_url))
-        metadata_folder.item.append(templates.get_ddi_cdif_request(hvdnet_base_url))
-        metadata_folder.item.append(templates.get_ddi_cdif_request(hvdnet_base_url, format='turtle'))
-        #metadata_folder.item.append(templates.get_mtnards_request(hvdnet_base_url))
+        # Metadata requests (HVDNet)
+        metadata_folder.item.append(templates.get_hvdnet_croissant_request(hvdnet_base_url))
+        metadata_folder.item.append(templates.get_hvdnet_dcat_request(hvdnet_base_url))
+        metadata_folder.item.append(templates.get_hvdnet_dcat_request(hvdnet_base_url, format='turtle'))
+        metadata_folder.item.append(templates.get_hvdnet_ddi_codebook_request(hvdnet_base_url))
+        metadata_folder.item.append(templates.get_hvdnet_ddi_cdif_request(hvdnet_base_url))
+        metadata_folder.item.append(templates.get_hvdnet_ddi_cdif_request(hvdnet_base_url, format='turtle'))
+
+        # Metadata requests (RDS)
+        metadata_rds_folder = templates.get_mtnards_metadata_folder()
+        item.append(metadata_rds_folder)
+
+        metadata_rds_request_item = postman_collection.Item()
+        metadata_rds_request_item.name = "Overview"
+        metadata_rds_request_item.description = "Get data product metadata"
+        metadata_rds_request_item.create_request(f"{data_product.metadata_api_url}")
+        metadata_rds_folder.item.append(metadata_rds_request_item)
+
+        metadata_rds_request_item = postman_collection.Item()
+        metadata_rds_request_item.name = "Variables"
+        metadata_rds_request_item.description = "Get the variables of a specific data product. Returns a list of summary objects about any variables that are used in the specified data product. These summaries contain both the variable URI and ID, which can be used to get more detailed information about the variable."
+        metadata_rds_request_item.create_request(f"{data_product.metadata_api_url}/variables")
+        metadata_rds_folder.item.append(metadata_rds_request_item)
+
+        metadata_rds_request_item = postman_collection.Item()
+        metadata_rds_request_item.name = "Variable Details"
+        metadata_rds_request_item.description = "Returns a variable with more detail than what is provided by the summary object. If the variable has a classification, its URI should be available on the variable which can be used to retrieve the classification."
+        metadata_rds_request_item.create_request(f"{data_product.metadata_api_url}/variable/:id")
+        metadata_rds_request_item.request.url.create_variable(key="id", description="The ID or URI of the variable.")
+        metadata_rds_folder.item.append(metadata_rds_request_item)
+
+        metadata_rds_request_item = postman_collection.Item()
+        metadata_rds_request_item.name = "Classifications"
+        metadata_rds_request_item.description = "Get the classifications of a specific data product. Returns a list of summary objects about any classifications that are used in the specified data product.These summary objects hold the classification uri and classification id (among other things) either of which can be used to get more information about the classification."
+        metadata_rds_request_item.create_request(f"{data_product.metadata_api_url}/classifications")
+        metadata_rds_folder.item.append(metadata_rds_request_item)
+
+        metadata_rds_request_item = postman_collection.Item()
+        metadata_rds_request_item.name = "Classification Details"
+        metadata_rds_request_item.description = "Returns the specified classification with more detail than the summary. Codes will be excluded from this object, the idea being that this classification could have a large amount of codes and clients can build these codes up through the used of the codes endpoints."
+        metadata_rds_request_item.create_request(f"{data_product.metadata_api_url}/classification/:id")
+        metadata_rds_request_item.request.url.create_variable(key="id", description="The ID or URI of the classification.")
+        metadata_rds_folder.item.append(metadata_rds_request_item)
+
+        metadata_rds_request_item = postman_collection.Item()
+        metadata_rds_request_item.name = "Classification Codes"
+        metadata_rds_request_item.description = "This allows the client to page through or build up the codes of the classification as desired."
+        metadata_rds_request_item.create_request(f"{data_product.metadata_api_url}/classification/:id/codes")
+        metadata_rds_request_item.request.url.create_variable(key="id", description="The ID or URI of the classification.")
+        metadata_rds_folder.item.append(metadata_rds_request_item)
+
+        metadata_rds_request_item = postman_collection.Item()
+        metadata_rds_request_item.name = "Changelog"
+        metadata_rds_request_item.description = "Get the change log for a data product. This will be an array of ChangeLog entries ordered with the latest first. If there is no changelog available an empty array will be returned."
+        metadata_rds_request_item.create_request(f"{data_product.metadata_api_url}/changelog")
+        metadata_rds_folder.item.append(metadata_rds_request_item)
+
 
         # DATA FOLDER
         data_folder = templates.get_data_folder(platform="mtnards")
         item.append(data_folder)
+        data_folder.item.append(templates.get_mtnards_select_request(data_product))
+        data_folder.item.append(templates.get_mtnards_tabulate_request(data_product))
+        data_folder.item.append(templates.get_mtnards_regression_request(data_product))
 
         # CODE FOLDER
         code_folder = templates.get_code_folder(platform="mtnards")
@@ -201,7 +254,7 @@ class MtnaRdsPostmanPublisher(BaseModel):
                             for mtna_request in mtna_folders.item:
                                 mtna_request.id = None
                         # create and populate folder
-                        mtna_folder = templates.get_mtnards_folder(markdown=mtna_collection.info.description.content)
+                        mtna_folder = templates.get_mtnards_collection_folder(markdown=mtna_collection.info.description.content)
                         mtna_folder.item = mtna_collection.item
                         # add folder to collection
                         item.append(mtna_folder)
@@ -238,13 +291,13 @@ class MtnaRdsPostmanCollectionGenerator(BaseModel):
         hvdnet_base_url = f"https://api.highvaluedata.net/datasets/socrata:{dataset.server.host}:{dataset.id}"
 
         # Metadata requests
-        metadata_folder.item.append(templates.get_croissant_request(hvdnet_base_url))
-        metadata_folder.item.append(templates.get_dcat_request(hvdnet_base_url))
-        metadata_folder.item.append(templates.get_dcat_request(hvdnet_base_url, format='turtle'))
-        metadata_folder.item.append(templates.get_ddi_codebook_request(hvdnet_base_url))
-        metadata_folder.item.append(templates.get_ddi_cdif_request(hvdnet_base_url))
-        metadata_folder.item.append(templates.get_ddi_cdif_request(hvdnet_base_url, format='turtle'))
-        metadata_folder.item.append(templates.get_socrata_request(hvdnet_base_url))
+        metadata_folder.item.append(templates.get_hvdnet_croissant_request(hvdnet_base_url))
+        metadata_folder.item.append(templates.get_hvdnet_dcat_request(hvdnet_base_url))
+        metadata_folder.item.append(templates.get_hvdnet_dcat_request(hvdnet_base_url, format='turtle'))
+        metadata_folder.item.append(templates.get_hvdnet_ddi_codebook_request(hvdnet_base_url))
+        metadata_folder.item.append(templates.get_hvdnet_ddi_cdif_request(hvdnet_base_url))
+        metadata_folder.item.append(templates.get_hvdnet_ddi_cdif_request(hvdnet_base_url, format='turtle'))
+        metadata_folder.item.append(templates.get_hvdnet_socrata_request(hvdnet_base_url))
 
         # DATA FOLDER
         data_folder = templates.get_data_folder(platform="socrata")
