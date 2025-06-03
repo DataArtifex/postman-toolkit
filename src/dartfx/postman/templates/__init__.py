@@ -13,15 +13,15 @@ jinja_env.filters['now'] = lambda dummy: datetime.now().strftime("%Y-%m-%d %H:%M
 
 def get_code_folder(**kwargs) -> postman_collection.ItemGroup:
     folder = postman_collection.ItemGroup()
-    folder.name = "Code Snippets"
+    folder.name = "Code Generators"
     template = jinja_env.get_template("code_folder.md.j2")
     folder.description = template.render(**kwargs)
     return folder
 
 def get_collection_description(markdown, **kwargs) -> str:
-        template = jinja_env.get_template("collection_description.md.j2")
-        description = template.render(markdown=markdown, **kwargs)
-        return description
+    template = jinja_env.get_template("collection_description.md.j2")
+    description = template.render(markdown=markdown, **kwargs)
+    return description
 
 def get_data_folder(platform:str|None=None, **kwargs) -> postman_collection.ItemGroup:
     folder = postman_collection.ItemGroup()
@@ -94,11 +94,11 @@ def get_hvdnet_socrata_request(base_url, **kwargs) -> postman_collection.Item:
     return item
 
 def get_metadata_folder(**kwargs) -> postman_collection.ItemGroup:
-        folder = postman_collection.ItemGroup()
-        folder.name = "Metadata"
-        template = jinja_env.get_template("metadata_folder.md.j2")
-        folder.description = template.render(**kwargs)
-        return folder
+    folder = postman_collection.ItemGroup()
+    folder.name = "Metadata"
+    template = jinja_env.get_template("metadata_folder.md.j2")
+    folder.description = template.render(**kwargs)
+    return folder
 
 def get_markdown_request(base_url, **kwargs) -> postman_collection.Item:
     # Markdown request
@@ -112,35 +112,23 @@ def get_markdown_request(base_url, **kwargs) -> postman_collection.Item:
     return item
 
 def get_mtnards_collection_folder(markdown:str, **kwargs) -> postman_collection.ItemGroup:
-        folder = postman_collection.ItemGroup()
-        folder.name = "MTNA RDS"
-        template = jinja_env.get_template("mtnards_collection_folder.md.j2")
-        folder.description = template.render(markdown=markdown, **kwargs)
-        return folder
+    folder = postman_collection.ItemGroup()
+    folder.name = "MTNA RDS Postman"
+    template = jinja_env.get_template("mtnards_collection_folder.md.j2")
+    folder.description = template.render(markdown=markdown, **kwargs)
+    return folder
 
 def get_mtnards_metadata_folder(**kwargs) -> postman_collection.ItemGroup:
-        folder = postman_collection.ItemGroup()
-        folder.name = "Metadata (MTNA RDS)"
-        template = jinja_env.get_template("mtnards_metadata_folder.md.j2")
-        folder.description = template.render(**kwargs)
-        return folder
+    folder = postman_collection.ItemGroup()
+    folder.name = "Metadata (MTNA RDS)"
+    template = jinja_env.get_template("mtnards_metadata_folder.md.j2")
+    folder.description = template.render(**kwargs)
+    return folder
 
 def get_mtnards_regression_request(data_product: MtnaRdsDataProduct, **kwargs) -> postman_collection.Item:
     item = postman_collection.Item()
     item.name = "Run regression (bivariate)"
     item.request = item.create_request(f"{data_product.tabulate_api_url}")
-    item.request.url.create_query_parameter('dependent', None, "Required. The ID of the dependent variable.", False)
-    item.request.url.create_query_parameter('independent', None, "Required. The ID of the independent variable.", False)
-    item.request.url.create_query_parameter('count', "1", "Flag specifying whether the total row count should be returned along side the data.", True)
-    item.request.url.create_query_parameter('format', None, "RDS can return a variety of JSON objects to plug into various java script charting libraries. Available formats: MTNA_RDS, MTNA_simple, MTNA_TABULATE, AMCHARTS, GCHARTS, PLOTLY_BAR, PLOTLY_BOXPLOT, PLOTLY_BUBBLE, PLOTLY_HIST, PLOTLY_PIE, PLOTLY_SCATTER.", True)
-    item.request.url.create_query_parameter('groupby', None, "When computing a new variable using a function that depends on aggregation, the group by parameter can specify which columns to group by.", True)
-    item.request.url.create_query_parameter('inject', "1", "Flag specifying to inject codes into the returned records.", True)
-    item.request.url.create_query_parameter('limit', "50", "The maximum number of records to return.", True)
-    item.request.url.create_query_parameter('metadata', "1", "Flag specifying if metadata should be returned along side the data.", True)
-    item.request.url.create_query_parameter('offset', "0", "The record to start at.", True)
-    item.request.url.create_query_parameter('orderby', None, "Allows the data to be reordered in ascending or descending order by column. Example: orderby=V1 DESC,V2 ASC.", True)
-    item.request.url.create_query_parameter('weights', None, "The IDs of variables to use as weights in the resulting data.", True)
-    item.request.url.create_query_parameter('where', None, "The where parameter allows filters to be applied to the data that will be returned. This follows a syntax similar to a SQL where clause.", True)
     template = jinja_env.get_template("mtnards_tabulate_request.md.j2")
     item.request.description = template.render(**kwargs)
     return item
@@ -150,20 +138,6 @@ def get_mtnards_select_request(data_product: MtnaRdsDataProduct, **kwargs) -> po
     item = postman_collection.Item()
     item.name = "Select records"
     item.request = item.create_request(f"{data_product.select_api_url}")
-    item.request.url.create_query_parameter('collimit', "50", "Limits the number of columns returned.", True)
-    item.request.url.create_query_parameter('coloffset', "0", "Determines which column to start at.", True)
-    item.request.url.create_query_parameter('cols', None, "Column names, regular expressions, keywords, variable groups, or concepts to select. Any of these can be excluded as well by prepending '~' to these syntaxes.", True)
-    item.request.url.create_query_parameter('count', "0", "Flag specifying whether the total row count should be returned along side the data.", True)
-    item.request.url.create_query_parameter('format', None, "RDS can return a variety of JSON objects to plug into various java script charting libraries. Available formats: MTNA_RDS, MTNA_simple, MTNA_TABULATE, AMCHARTS, GCHARTS, PLOTLY_BAR, PLOTLY_BOXPLOT, PLOTLY_BUBBLE, PLOTLY_HIST, PLOTLY_PIE, PLOTLY_SCATTER.", True)
-    item.request.url.create_query_parameter('groupby', None, "When computing a new variable using a function that depends on aggregation, the group by parameter can specify which columns to group by.", True)
-    item.request.url.create_query_parameter('inject', "1", "Flag specifying to inject codes into the returned records.", True)
-    item.request.url.create_query_parameter('limit', "50", "The maximum number of records to return.", True)
-    item.request.url.create_query_parameter('lock', None, "Column names, regular expressions, key words, variable groups, or concepts to lock. These will be returned first adn listed out in DataSetInformation that is returned on the DataSet.", True)
-    item.request.url.create_query_parameter('metadata', "1", "Flag specifying if metadata should be returned along side the data.", True)
-    item.request.url.create_query_parameter('offset', "0", "The record to start at.", True)
-    item.request.url.create_query_parameter('orderby', None, "Allows the data to be reordered in ascending or descending order by column. Example: orderby=V1 DESC,V2 ASC.", True)
-    item.request.url.create_query_parameter('weights', None, "The IDs of variables to use as weights in the resulting data.", True)
-    item.request.url.create_query_parameter('where', None, "The where parameter allows filters to be applied to the data that will be returned. This follows a syntax similar to a SQL where clause.", True)
     template = jinja_env.get_template("mtnards_select_request.md.j2")
     item.request.description = template.render(**kwargs)
     return item
@@ -172,19 +146,6 @@ def get_mtnards_tabulate_request(data_product: MtnaRdsDataProduct, **kwargs) -> 
     item = postman_collection.Item()
     item.name = "Create table"
     item.request = item.create_request(f"{data_product.tabulate_api_url}")
-    item.request.url.create_query_parameter('dims', None, "Required. Categorical variables / columns to use as dimensions.", False)
-    item.request.url.create_query_parameter('measure', None, "Columns to use as measures. Count is used by default.", True)
-    item.request.url.create_query_parameter('count', "1", "Flag specifying whether the total row count should be returned along side the data.", True)
-    item.request.url.create_query_parameter('format', None, "RDS can return a variety of JSON objects to plug into various java script charting libraries. Available formats: MTNA_RDS, MTNA_simple, MTNA_TABULATE, AMCHARTS, GCHARTS, PLOTLY_BAR, PLOTLY_BOXPLOT, PLOTLY_BUBBLE, PLOTLY_HIST, PLOTLY_PIE, PLOTLY_SCATTER.", True)
-    item.request.url.create_query_parameter('groupby', None, "When computing a new variable using a function that depends on aggregation, the group by parameter can specify which columns to group by.", True)
-    item.request.url.create_query_parameter('inject', "1", "Flag specifying to inject codes into the returned records.", True)
-    item.request.url.create_query_parameter('limit', "50", "The maximum number of records to return.", True)
-    item.request.url.create_query_parameter('metadata', "1", "Flag specifying if metadata should be returned along side the data.", True)
-    item.request.url.create_query_parameter('offset', "0", "The record to start at.", True)
-    item.request.url.create_query_parameter('orderby', None, "Allows the data to be reordered in ascending or descending order by column. Example: orderby=V1 DESC,V2 ASC.", True)
-    item.request.url.create_query_parameter('totals', "1", "Flag specifying whether subtotals should be returned along side the data.", True)
-    item.request.url.create_query_parameter('weights', None, "The IDs of variables to use as weights in the resulting data.", True)
-    item.request.url.create_query_parameter('where', None, "The where parameter allows filters to be applied to the data that will be returned. This follows a syntax similar to a SQL where clause.", True)
     template = jinja_env.get_template("mtnards_tabulate_request.md.j2")
     item.request.description = template.render(**kwargs)
     return item

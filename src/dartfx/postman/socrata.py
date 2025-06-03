@@ -149,7 +149,7 @@ class SocrataPostmanCollectionGenerator(BaseModel):
         for language in languages:
             item = postman_collection.Item()
             item.name = language["name"]
-            item.create_request(f"{hvdnet_base_url}/code/{language['path']}")
+            item.create_request(f"{hvdnet_base_url}/generate/{language['path']}")
             self._add_query_request_parameters(item.request)
             code_folder.item.append(item)
 
