@@ -10,6 +10,8 @@ from dartfx.postmanapi import postman
 from dartfx.postmanapi import postman_collection
 from dartfx.socrata import SocrataServer, SocrataDataset
 
+import urllib.parse
+
 class SocrataPostmanPublisherConfig(BaseModel):
     """Configuration for SocrataPostmanPublisher."""
     # unicode prefixes: ⛁ ⛃ 🔢
@@ -85,6 +87,7 @@ class SocrataPostmanCollectionGenerator(BaseModel):
         collection = postman_collection.Collection()
         dataset = self.dataset
         config = self.config
+        topic = f'Postman: {dataset.name} ({dataset.server.host})'
 
         # collection name
         name = f"{dataset.name} [{dataset.id}]"
@@ -96,25 +99,25 @@ class SocrataPostmanCollectionGenerator(BaseModel):
 
         # collection description
 
-        collection.info.description = templates.get_collection_description(markdown=dataset.get_markdown())
+        collection.info.description = templates.get_collection_description(markdown=dataset.get_markdown(), topic=urllib.parse.quote(f'{topic} [collection]'))
 
         # Metadata Folder
-        metadata_folder = templates.get_metadata_folder()
+        metadata_folder = templates.get_metadata_folder(topic=urllib.parse.quote(f'{topic} [metadata]'))
         collection.item.append(metadata_folder)
         
         hvdnet_base_url = f"https://api.highvaluedata.net/datasets/socrata:{dataset.server.host}:{dataset.id}"
 
         # Metadata requests
-        metadata_folder.item.append(templates.get_hvdnet_croissant_request(hvdnet_base_url))
-        metadata_folder.item.append(templates.get_hvdnet_dcat_request(hvdnet_base_url))
-        metadata_folder.item.append(templates.get_hvdnet_dcat_request(hvdnet_base_url, format='turtle'))
-        metadata_folder.item.append(templates.get_hvdnet_ddi_codebook_request(hvdnet_base_url))
-        metadata_folder.item.append(templates.get_hvdnet_ddi_cdif_request(hvdnet_base_url))
-        metadata_folder.item.append(templates.get_hvdnet_ddi_cdif_request(hvdnet_base_url, format='turtle'))
-        metadata_folder.item.append(templates.get_hvdnet_socrata_request(hvdnet_base_url))
+        metadata_folder.item.append(templates.get_hvdnet_croissant_request(hvdnet_base_url, topic=urllib.parse.quote(f'{topic} [croissant]')))
+        metadata_folder.item.append(templates.get_hvdnet_dcat_request(hvdnet_base_url, topic=urllib.parse.quote(f'{topic} [dcat/json]')))
+        metadata_folder.item.append(templates.get_hvdnet_dcat_request(hvdnet_base_url, format='turtle', topic=urllib.parse.quote(f'{topic} [dcat/ttl]')))
+        metadata_folder.item.append(templates.get_hvdnet_ddi_codebook_request(hvdnet_base_url, topic=urllib.parse.quote(f'{topic} [ddi-c]')))
+        metadata_folder.item.append(templates.get_hvdnet_ddi_cdif_request(hvdnet_base_url, topic=urllib.parse.quote(f'{topic} [ddi-cdif/json]')))
+        metadata_folder.item.append(templates.get_hvdnet_ddi_cdif_request(hvdnet_base_url, format='turtle', topic=urllib.parse.quote(f'{topic} [ddi-cdif/ttl]')))
+        metadata_folder.item.append(templates.get_hvdnet_socrata_request(hvdnet_base_url, topic=urllib.parse.quote(f'{topic} [socrata]')))
 
         # DATA FOLDER
-        data_folder = templates.get_data_folder(platform="socrata")
+        data_folder = templates.get_data_folder(platform="socrata", topic=urllib.parse.quote(f'{topic} [data]'))
         collection.item.append(data_folder)
 
         # Query Data Request (JSON)
@@ -132,7 +135,7 @@ class SocrataPostmanCollectionGenerator(BaseModel):
         data_folder.item.append(item)
 
         # CODE FOLDER
-        code_folder = templates.get_code_folder()
+        code_folder = templates.get_code_folder(topic=urllib.parse.quote(f'{topic} [code]'))
         collection.item.append(code_folder)
 
         languages = [
@@ -154,16 +157,16 @@ class SocrataPostmanCollectionGenerator(BaseModel):
             code_folder.item.append(item)
 
         # SQL FOLDER
-        #sql_folder = templates.get_sql_folder()
+        #sql_folder = templates.get_sql_folder(topic=urllib.parse.quote(f'{topic} [sql]'))
         #collection.item.append(sql_folder)
 
         # AI FOLDER
-        ai_folder = templates.get_ai_folder()
+        ai_folder = templates.get_ai_folder(topic=urllib.parse.quote(f'{topic} [data]'))
         collection.item.append(ai_folder)
-        ai_folder.item.append(templates.get_markdown_request(hvdnet_base_url))
+        ai_folder.item.append(templates.get_markdown_request(hvdnet_base_url, topic=urllib.parse.quote(f'{topic} [md]')))
 
         # VISUALIZATION FOLDER
-        #dv_folder = templates.get_visualization_folder()
+        #dv_folder = templates.get_visualization_folder(topic=urllib.parse.quote(f'{topic} [viz]'))
         #collection.item.append(dv_folder)
 
         # COLLECTION VARIABLES
