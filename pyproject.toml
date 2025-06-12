@@ -59,8 +59,8 @@ path = "src/dartfx/postman/__about__.py"
 post-install-commands = []
 dependencies = [
   "coverage[toml]>=6.5",
-  "pytest",
-  "requests"
+  "pytest>=8.0",
+  "notebook>=7.0",
 ]
 
 [tool.hatch.envs.default.scripts]
