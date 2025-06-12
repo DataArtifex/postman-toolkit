@@ -5,6 +5,7 @@ from dartfx.postmanapi import postman_collection
 from dartfx.socrata import SocrataServer
 from datetime import datetime
 from jinja2 import Environment, FileSystemLoader
+import urllib.parse
 
 TEMPLATES_DIR = os.getenv("DARTFX_POSTMAN_JINJA_TEMPLATES_DIR", os.path.dirname(os.path.abspath(__file__)))
 
@@ -173,8 +174,8 @@ def get_visualization_folder(**kwargs) -> postman_collection.ItemGroup:
 
 def initialize_socrata_workspace(server: SocrataServer, postman_api: postman.PostmanApi, workspace_id: str|None = None, workspace_type:str ="public") -> postman.WorkspaceManager:
     """Initialize a workspace for a Socrata server instance."""
-    template = jinja_env.get_template("socrata_workspace.md.j2")
-    description = template.render(name=server.name, home=server.host_url) 
+    template = jinja_env.get_template("workspace.md.j2")
+    description = template.render(platform='socrata', name=server.name, home=server.host_url, topic=urllib.parse.quote(f'{server.name} workspace')) 
     # create a new workspace (if not specified)
     if workspace_id is None:
         name = server.name or server.host
