@@ -182,7 +182,7 @@ class MtnaRdsPostmanPublisher(BaseModel):
         collection = postman_collection.Collection()
         
         # name    
-        name = f"{config.name_prefix or ''}{data_product.name} [{data_product.id}]{config.name_suffix or ''}"
+        name = f"{config.name_prefix or ''}{data_product.name} [{data_product._catalog.id}/{data_product.id}]{config.name_suffix or ''}"
         collection.info.name = name
         
         # description
