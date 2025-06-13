@@ -27,6 +27,7 @@ dependencies = [
   "dartfx-postmanapi",
   "dartfx-socrata",
   "dartfx-uscensus",
+  "frictionless>=5.18.0",
   "jinja2>=3",
   "pydantic>=2",
   "requests>2.32.0"
