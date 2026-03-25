@@ -53,6 +53,9 @@ include = [
   "src/dartfx/templates/**/*.j2"
 ]
 
+[tool.hatch.metadata]
+allow-direct-references = true
+
 [tool.hatch.version]
 path = "src/dartfx/postman/__about__.py"
 
