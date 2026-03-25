@@ -1,8 +1,9 @@
 """
-Integration with High-Value Data Network 
+Integration with High-Value Data Network
 """
 
-class Credentials():
+
+class Credentials:
     account: str
     password: str
 
@@ -10,15 +11,14 @@ class Credentials():
         self.account = account
         self.password = password
 
-class MongoRegistry():
+
+class MongoRegistry:
     host: str
     port: int = 27017
 
-    def __init__(self, host, port:int=27017):
+    def __init__(self, host, port: int = 27017):
         self.host = host
         self.port = port
 
     def register_postman_collection(self, collection_id: str):
         pass
-
-    

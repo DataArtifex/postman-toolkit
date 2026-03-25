@@ -10,7 +10,8 @@ import urllib.parse
 TEMPLATES_DIR = os.getenv("DARTFX_POSTMAN_JINJA_TEMPLATES_DIR", os.path.dirname(os.path.abspath(__file__)))
 
 jinja_env = Environment(loader=FileSystemLoader(TEMPLATES_DIR))
-jinja_env.filters['now'] = lambda dummy: datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+jinja_env.filters["now"] = lambda dummy: datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
 
 def get_code_folder(**kwargs) -> postman_collection.ItemGroup:
     folder = postman_collection.ItemGroup()
@@ -19,29 +20,35 @@ def get_code_folder(**kwargs) -> postman_collection.ItemGroup:
     folder.description = template.render(**kwargs)
     return folder
 
+
 def get_collection_description(markdown, **kwargs) -> str:
     template = jinja_env.get_template("collection_description.md.j2")
     description = template.render(markdown=markdown, **kwargs)
     return description
 
-def get_data_folder(platform:str|None=None, **kwargs) -> postman_collection.ItemGroup:
+
+def get_data_folder(platform: str | None = None, **kwargs) -> postman_collection.ItemGroup:
     folder = postman_collection.ItemGroup()
     folder.name = "Data"
     template = jinja_env.get_template("data_folder.md.j2")
     folder.description = template.render(platform=platform, **kwargs)
     return folder
 
-def get_hvdnet_croissant_request(base_url, format=None, **kwargs) -> postman_collection.Item:    
+
+def get_hvdnet_croissant_request(base_url, format=None, **kwargs) -> postman_collection.Item:
     # Croissant request
     item = postman_collection.Item()
     item.name = "Croissant"
     if format:
         item.name += f" ({format})"
     item.create_request(f"{base_url}/croissant")
-    item.request.url.create_query_parameter('format', value=format, description="The serialization format.", disabled=format is None) # type: ignore
+    item.request.url.create_query_parameter(
+        "format", value=format, description="The serialization format.", disabled=format is None
+    )  # type: ignore
     template = jinja_env.get_template("metadata_croissant_request.md.j2")
     item.request.description = template.render(**kwargs)
     return item
+
 
 def get_hvdnet_dcat_request(base_url, format=None, **kwargs) -> postman_collection.Item:
     # DCAT request
@@ -50,10 +57,13 @@ def get_hvdnet_dcat_request(base_url, format=None, **kwargs) -> postman_collecti
     if format:
         item.name += f" ({format})"
     item.create_request(f"{base_url}/dcat")
-    item.request.url.create_query_parameter('format', value=format,description="The serialization format.", disabled=format is None) # type: ignore
+    item.request.url.create_query_parameter(
+        "format", value=format, description="The serialization format.", disabled=format is None
+    )  # type: ignore
     template = jinja_env.get_template("metadata_dcat_request.md.j2")
     item.request.description = template.render(**kwargs)
     return item
+
 
 def get_hvdnet_ddi_codebook_request(base_url, **kwargs) -> postman_collection.Item:
     # DDI-Codebook request
@@ -64,6 +74,7 @@ def get_hvdnet_ddi_codebook_request(base_url, **kwargs) -> postman_collection.It
     item.request.description = template.render(**kwargs)
     return item
 
+
 def get_hvdnet_ddi_cdif_request(base_url, format=None, **kwargs) -> postman_collection.Item:
     # DDI-CDI CDIF request
     item = postman_collection.Item()
@@ -71,10 +82,13 @@ def get_hvdnet_ddi_cdif_request(base_url, format=None, **kwargs) -> postman_coll
     if format:
         item.name += f" ({format})"
     item.create_request(f"{base_url}/ddi/cdif")
-    item.request.url.create_query_parameter('format', value=format, description="The serialization format.", disabled=format is None) # type: ignore
+    item.request.url.create_query_parameter(
+        "format", value=format, description="The serialization format.", disabled=format is None
+    )  # type: ignore
     template = jinja_env.get_template("metadata_ddi-cdif_request.md.j2")
     item.request.description = template.render(**kwargs)
     return item
+
 
 def get_hvdnet_mtnards_request(base_url, **kwargs) -> postman_collection.Item:
     # MTNA RDS request
@@ -85,6 +99,7 @@ def get_hvdnet_mtnards_request(base_url, **kwargs) -> postman_collection.Item:
     item.request.description = template.render(**kwargs)
     return item
 
+
 def get_hvdnet_socrata_request(base_url, **kwargs) -> postman_collection.Item:
     # Socrata request
     item = postman_collection.Item()
@@ -94,12 +109,14 @@ def get_hvdnet_socrata_request(base_url, **kwargs) -> postman_collection.Item:
     item.request.description = template.render(**kwargs)
     return item
 
+
 def get_metadata_folder(**kwargs) -> postman_collection.ItemGroup:
     folder = postman_collection.ItemGroup()
     folder.name = "Metadata"
     template = jinja_env.get_template("metadata_folder.md.j2")
     folder.description = template.render(**kwargs)
     return folder
+
 
 def get_markdown_request(base_url, **kwargs) -> postman_collection.Item:
     # Markdown request
@@ -112,12 +129,14 @@ def get_markdown_request(base_url, **kwargs) -> postman_collection.Item:
     item.add_test_script(template.render(**kwargs))
     return item
 
-def get_mtnards_collection_folder(markdown:str, **kwargs) -> postman_collection.ItemGroup:
+
+def get_mtnards_collection_folder(markdown: str, **kwargs) -> postman_collection.ItemGroup:
     folder = postman_collection.ItemGroup()
     folder.name = "MTNA RDS Postman"
     template = jinja_env.get_template("mtnards_collection_folder.md.j2")
     folder.description = template.render(markdown=markdown, **kwargs)
     return folder
+
 
 def get_mtnards_metadata_folder(**kwargs) -> postman_collection.ItemGroup:
     folder = postman_collection.ItemGroup()
@@ -125,6 +144,7 @@ def get_mtnards_metadata_folder(**kwargs) -> postman_collection.ItemGroup:
     template = jinja_env.get_template("mtnards_metadata_folder.md.j2")
     folder.description = template.render(**kwargs)
     return folder
+
 
 def get_mtnards_regression_request(data_product: MtnaRdsDataProduct, **kwargs) -> postman_collection.Item:
     item = postman_collection.Item()
@@ -143,6 +163,7 @@ def get_mtnards_select_request(data_product: MtnaRdsDataProduct, **kwargs) -> po
     item.request.description = template.render(**kwargs)
     return item
 
+
 def get_mtnards_tabulate_request(data_product: MtnaRdsDataProduct, **kwargs) -> postman_collection.Item:
     item = postman_collection.Item()
     item.name = "Create table"
@@ -151,12 +172,14 @@ def get_mtnards_tabulate_request(data_product: MtnaRdsDataProduct, **kwargs) -> 
     item.request.description = template.render(**kwargs)
     return item
 
+
 def get_sql_folder(**kwargs) -> postman_collection.ItemGroup:
     folder = postman_collection.ItemGroup()
     folder.name = "SQL"
     template = jinja_env.get_template("sql_folder.md.j2")
     folder.description = template.render(**kwargs)
     return folder
+
 
 def get_ai_folder(**kwargs) -> postman_collection.ItemGroup:
     folder = postman_collection.ItemGroup()
@@ -165,6 +188,7 @@ def get_ai_folder(**kwargs) -> postman_collection.ItemGroup:
     folder.description = template.render(**kwargs)
     return folder
 
+
 def get_visualization_folder(**kwargs) -> postman_collection.ItemGroup:
     folder = postman_collection.ItemGroup()
     folder.name = "Visualization"
@@ -172,10 +196,18 @@ def get_visualization_folder(**kwargs) -> postman_collection.ItemGroup:
     folder.description = template.render(**kwargs)
     return folder
 
-def initialize_socrata_workspace(server: SocrataServer, postman_api: postman.PostmanApi, workspace_id: str|None = None, workspace_type:str ="public") -> postman.WorkspaceManager:
+
+def initialize_socrata_workspace(
+    server: SocrataServer,
+    postman_api: postman.PostmanApi,
+    workspace_id: str | None = None,
+    workspace_type: str = "public",
+) -> postman.WorkspaceManager:
     """Initialize a workspace for a Socrata server instance."""
     template = jinja_env.get_template("workspace.md.j2")
-    description = template.render(platform='socrata', name=server.name, home=server.host_url, topic=urllib.parse.quote(f'{server.name} workspace')) 
+    description = template.render(
+        platform="socrata", name=server.name, home=server.host_url, topic=urllib.parse.quote(f"{server.name} workspace")
+    )
     # create a new workspace (if not specified)
     if workspace_id is None:
         name = server.name or server.host
