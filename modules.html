@@ -1,0 +1,335 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="./">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>dartfx.postman &mdash; Data Artifex Postman Toolkit 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=9edc463e" />
+
+  
+      <script src="_static/jquery.js?v=5d32c60e"></script>
+      <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="_static/documentation_options.js?v=01f34227"></script>
+      <script src="_static/doctools.js?v=fd6eb6e6"></script>
+      <script src="_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Data Artifex Postman Toolkit" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            Data Artifex Postman Toolkit
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">dartfx.postman</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-dartfx.postman.mtnards">MTNA Rich Data Services</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#dartfx.postman.mtnards.MtnaRdsPostmanPublisher"><code class="docutils literal notranslate"><span class="pre">MtnaRdsPostmanPublisher</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#dartfx.postman.mtnards.MtnaRdsPostmanPublisher.config"><code class="docutils literal notranslate"><span class="pre">MtnaRdsPostmanPublisher.config</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dartfx.postman.mtnards.MtnaRdsPostmanPublisher.model_config"><code class="docutils literal notranslate"><span class="pre">MtnaRdsPostmanPublisher.model_config</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dartfx.postman.mtnards.MtnaRdsPostmanPublisher.postman_api"><code class="docutils literal notranslate"><span class="pre">MtnaRdsPostmanPublisher.postman_api</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dartfx.postman.mtnards.MtnaRdsPostmanPublisher.publish_catalog"><code class="docutils literal notranslate"><span class="pre">MtnaRdsPostmanPublisher.publish_catalog()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dartfx.postman.mtnards.MtnaRdsPostmanPublisher.publish_data_product"><code class="docutils literal notranslate"><span class="pre">MtnaRdsPostmanPublisher.publish_data_product()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dartfx.postman.mtnards.MtnaRdsPostmanPublisher.publish_rds_collection_to_collection"><code class="docutils literal notranslate"><span class="pre">MtnaRdsPostmanPublisher.publish_rds_collection_to_collection()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dartfx.postman.mtnards.MtnaRdsPostmanPublisher.publish_rds_collection_to_workspace"><code class="docutils literal notranslate"><span class="pre">MtnaRdsPostmanPublisher.publish_rds_collection_to_workspace()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dartfx.postman.mtnards.MtnaRdsPostmanPublisher.server"><code class="docutils literal notranslate"><span class="pre">MtnaRdsPostmanPublisher.server</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dartfx.postman.mtnards.MtnaRdsPostmanPublisher.temp_workspace_id"><code class="docutils literal notranslate"><span class="pre">MtnaRdsPostmanPublisher.temp_workspace_id</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#dartfx.postman.mtnards.MtnaRdsPostmanPublisherConfig"><code class="docutils literal notranslate"><span class="pre">MtnaRdsPostmanPublisherConfig</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#dartfx.postman.mtnards.MtnaRdsPostmanPublisherConfig.include_rds_collection"><code class="docutils literal notranslate"><span class="pre">MtnaRdsPostmanPublisherConfig.include_rds_collection</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dartfx.postman.mtnards.MtnaRdsPostmanPublisherConfig.model_config"><code class="docutils literal notranslate"><span class="pre">MtnaRdsPostmanPublisherConfig.model_config</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dartfx.postman.mtnards.MtnaRdsPostmanPublisherConfig.name_prefix"><code class="docutils literal notranslate"><span class="pre">MtnaRdsPostmanPublisherConfig.name_prefix</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dartfx.postman.mtnards.MtnaRdsPostmanPublisherConfig.name_suffix"><code class="docutils literal notranslate"><span class="pre">MtnaRdsPostmanPublisherConfig.name_suffix</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#module-dartfx.postman.socrata">Socrata</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#dartfx.postman.socrata.SocrataPostmanCollectionGenerator"><code class="docutils literal notranslate"><span class="pre">SocrataPostmanCollectionGenerator</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#dartfx.postman.socrata.SocrataPostmanCollectionGenerator.config"><code class="docutils literal notranslate"><span class="pre">SocrataPostmanCollectionGenerator.config</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dartfx.postman.socrata.SocrataPostmanCollectionGenerator.dataset"><code class="docutils literal notranslate"><span class="pre">SocrataPostmanCollectionGenerator.dataset</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dartfx.postman.socrata.SocrataPostmanCollectionGenerator.generate"><code class="docutils literal notranslate"><span class="pre">SocrataPostmanCollectionGenerator.generate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dartfx.postman.socrata.SocrataPostmanCollectionGenerator.model_config"><code class="docutils literal notranslate"><span class="pre">SocrataPostmanCollectionGenerator.model_config</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#dartfx.postman.socrata.SocrataPostmanPublisher"><code class="docutils literal notranslate"><span class="pre">SocrataPostmanPublisher</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#dartfx.postman.socrata.SocrataPostmanPublisher.config"><code class="docutils literal notranslate"><span class="pre">SocrataPostmanPublisher.config</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dartfx.postman.socrata.SocrataPostmanPublisher.model_config"><code class="docutils literal notranslate"><span class="pre">SocrataPostmanPublisher.model_config</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dartfx.postman.socrata.SocrataPostmanPublisher.postman_api"><code class="docutils literal notranslate"><span class="pre">SocrataPostmanPublisher.postman_api</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dartfx.postman.socrata.SocrataPostmanPublisher.publish_dataset"><code class="docutils literal notranslate"><span class="pre">SocrataPostmanPublisher.publish_dataset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dartfx.postman.socrata.SocrataPostmanPublisher.server"><code class="docutils literal notranslate"><span class="pre">SocrataPostmanPublisher.server</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#dartfx.postman.socrata.SocrataPostmanPublisherConfig"><code class="docutils literal notranslate"><span class="pre">SocrataPostmanPublisherConfig</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#dartfx.postman.socrata.SocrataPostmanPublisherConfig.model_config"><code class="docutils literal notranslate"><span class="pre">SocrataPostmanPublisherConfig.model_config</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dartfx.postman.socrata.SocrataPostmanPublisherConfig.name_prefix"><code class="docutils literal notranslate"><span class="pre">SocrataPostmanPublisherConfig.name_prefix</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#dartfx.postman.socrata.SocrataPostmanPublisherConfig.name_suffix"><code class="docutils literal notranslate"><span class="pre">SocrataPostmanPublisherConfig.name_suffix</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Data Artifex Postman Toolkit</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">dartfx.postman</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/modules.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="dartfx-postman">
+<h1>dartfx.postman<a class="headerlink" href="#dartfx-postman" title="Link to this heading"></a></h1>
+<div class="toctree-wrapper compound">
+</div>
+<section id="module-dartfx.postman.mtnards">
+<span id="mtna-rich-data-services"></span><h2>MTNA Rich Data Services<a class="headerlink" href="#module-dartfx.postman.mtnards" title="Link to this heading"></a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="dartfx.postman.mtnards.MtnaRdsPostmanPublisher">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">dartfx.postman.mtnards.</span></span><span class="sig-name descname"><span class="pre">MtnaRdsPostmanPublisher</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">postman_api</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PostmanApi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">server</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">MtnaRdsServer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#dartfx.postman.mtnards.MtnaRdsPostmanPublisherConfig" title="dartfx.postman.mtnards.MtnaRdsPostmanPublisherConfig"><span class="pre">MtnaRdsPostmanPublisherConfig</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">MtnaRdsPostmanPublisherConfig(name_prefix=None,</span> <span class="pre">name_suffix=None,</span> <span class="pre">include_rds_collection=False)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_workspace_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dartfx.postman.mtnards.MtnaRdsPostmanPublisher" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dartfx.postman.mtnards.MtnaRdsPostmanPublisher.config">
+<span class="sig-name descname"><span class="pre">config</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#dartfx.postman.mtnards.MtnaRdsPostmanPublisherConfig" title="dartfx.postman.mtnards.MtnaRdsPostmanPublisherConfig"><span class="pre">MtnaRdsPostmanPublisherConfig</span></a></span><a class="headerlink" href="#dartfx.postman.mtnards.MtnaRdsPostmanPublisher.config" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dartfx.postman.mtnards.MtnaRdsPostmanPublisher.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'arbitrary_types_allowed':</span> <span class="pre">True}</span></span><a class="headerlink" href="#dartfx.postman.mtnards.MtnaRdsPostmanPublisher.model_config" title="Link to this definition"></a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dartfx.postman.mtnards.MtnaRdsPostmanPublisher.postman_api">
+<span class="sig-name descname"><span class="pre">postman_api</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">PostmanApi</span></span><a class="headerlink" href="#dartfx.postman.mtnards.MtnaRdsPostmanPublisher.postman_api" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dartfx.postman.mtnards.MtnaRdsPostmanPublisher.publish_catalog">
+<span class="sig-name descname"><span class="pre">publish_catalog</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">catalog_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">workspace_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dartfx.postman.mtnards.MtnaRdsPostmanPublisher.publish_catalog" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dartfx.postman.mtnards.MtnaRdsPostmanPublisher.publish_data_product">
+<span class="sig-name descname"><span class="pre">publish_data_product</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">catalog_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_product_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">workspace_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#dartfx.postman.mtnards.MtnaRdsPostmanPublisherConfig" title="dartfx.postman.mtnards.MtnaRdsPostmanPublisherConfig"><span class="pre">MtnaRdsPostmanPublisherConfig</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#dartfx.postman.mtnards.MtnaRdsPostmanPublisher.publish_data_product" title="Link to this definition"></a></dt>
+<dd><p>Publish a data product as a collection under an existing workspace.</p>
+<p>If collection_id is specified, its content will be replaced (but the collection id remains the same).
+If both workspace_id and collection_id are provided, collection_id takes precedence, and the collection will be replaced.
+Otherwise, workspace_id must be specified and a new collection will be created.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dartfx.postman.mtnards.MtnaRdsPostmanPublisher.publish_rds_collection_to_collection">
+<span class="sig-name descname"><span class="pre">publish_rds_collection_to_collection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">catalog_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_product_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection_uid</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">folder_uid</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temp_workspace_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">create_root</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dartfx.postman.mtnards.MtnaRdsPostmanPublisher.publish_rds_collection_to_collection" title="Link to this definition"></a></dt>
+<dd><p>Published a data product under an existing collection or folder</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dartfx.postman.mtnards.MtnaRdsPostmanPublisher.publish_rds_collection_to_workspace">
+<span class="sig-name descname"><span class="pre">publish_rds_collection_to_workspace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">catalog_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_product_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">workspace_id</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dartfx.postman.mtnards.MtnaRdsPostmanPublisher.publish_rds_collection_to_workspace" title="Link to this definition"></a></dt>
+<dd><p>Publish a data product under an existing workspace</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dartfx.postman.mtnards.MtnaRdsPostmanPublisher.server">
+<span class="sig-name descname"><span class="pre">server</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">MtnaRdsServer</span></span><a class="headerlink" href="#dartfx.postman.mtnards.MtnaRdsPostmanPublisher.server" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dartfx.postman.mtnards.MtnaRdsPostmanPublisher.temp_workspace_id">
+<span class="sig-name descname"><span class="pre">temp_workspace_id</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#dartfx.postman.mtnards.MtnaRdsPostmanPublisher.temp_workspace_id" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dartfx.postman.mtnards.MtnaRdsPostmanPublisherConfig">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">dartfx.postman.mtnards.</span></span><span class="sig-name descname"><span class="pre">MtnaRdsPostmanPublisherConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_prefix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_suffix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_rds_collection</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dartfx.postman.mtnards.MtnaRdsPostmanPublisherConfig" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dartfx.postman.mtnards.MtnaRdsPostmanPublisherConfig.include_rds_collection">
+<span class="sig-name descname"><span class="pre">include_rds_collection</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></span><a class="headerlink" href="#dartfx.postman.mtnards.MtnaRdsPostmanPublisherConfig.include_rds_collection" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dartfx.postman.mtnards.MtnaRdsPostmanPublisherConfig.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></span><a class="headerlink" href="#dartfx.postman.mtnards.MtnaRdsPostmanPublisherConfig.model_config" title="Link to this definition"></a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dartfx.postman.mtnards.MtnaRdsPostmanPublisherConfig.name_prefix">
+<span class="sig-name descname"><span class="pre">name_prefix</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#dartfx.postman.mtnards.MtnaRdsPostmanPublisherConfig.name_prefix" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dartfx.postman.mtnards.MtnaRdsPostmanPublisherConfig.name_suffix">
+<span class="sig-name descname"><span class="pre">name_suffix</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#dartfx.postman.mtnards.MtnaRdsPostmanPublisherConfig.name_suffix" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-dartfx.postman.socrata">
+<span id="socrata"></span><h2>Socrata<a class="headerlink" href="#module-dartfx.postman.socrata" title="Link to this heading"></a></h2>
+<p>Classes and helpers to publish Socrata data products to Postman collections.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="dartfx.postman.socrata.SocrataPostmanCollectionGenerator">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">dartfx.postman.socrata.</span></span><span class="sig-name descname"><span class="pre">SocrataPostmanCollectionGenerator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SocrataDataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#dartfx.postman.socrata.SocrataPostmanPublisherConfig" title="dartfx.postman.socrata.SocrataPostmanPublisherConfig"><span class="pre">SocrataPostmanPublisherConfig</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">SocrataPostmanPublisherConfig(name_prefix=None,</span> <span class="pre">name_suffix=None)</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dartfx.postman.socrata.SocrataPostmanCollectionGenerator" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dartfx.postman.socrata.SocrataPostmanCollectionGenerator.config">
+<span class="sig-name descname"><span class="pre">config</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#dartfx.postman.socrata.SocrataPostmanPublisherConfig" title="dartfx.postman.socrata.SocrataPostmanPublisherConfig"><span class="pre">SocrataPostmanPublisherConfig</span></a></span><a class="headerlink" href="#dartfx.postman.socrata.SocrataPostmanCollectionGenerator.config" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dartfx.postman.socrata.SocrataPostmanCollectionGenerator.dataset">
+<span class="sig-name descname"><span class="pre">dataset</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">SocrataDataset</span></span><a class="headerlink" href="#dartfx.postman.socrata.SocrataPostmanCollectionGenerator.dataset" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dartfx.postman.socrata.SocrataPostmanCollectionGenerator.generate">
+<span class="sig-name descname"><span class="pre">generate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Collection</span></span></span><a class="headerlink" href="#dartfx.postman.socrata.SocrataPostmanCollectionGenerator.generate" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dartfx.postman.socrata.SocrataPostmanCollectionGenerator.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></span><a class="headerlink" href="#dartfx.postman.socrata.SocrataPostmanCollectionGenerator.model_config" title="Link to this definition"></a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dartfx.postman.socrata.SocrataPostmanPublisher">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">dartfx.postman.socrata.</span></span><span class="sig-name descname"><span class="pre">SocrataPostmanPublisher</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">postman_api</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">PostmanApi</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">server</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">SocrataServer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#dartfx.postman.socrata.SocrataPostmanPublisherConfig" title="dartfx.postman.socrata.SocrataPostmanPublisherConfig"><span class="pre">SocrataPostmanPublisherConfig</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">SocrataPostmanPublisherConfig(name_prefix=None,</span> <span class="pre">name_suffix=None)</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dartfx.postman.socrata.SocrataPostmanPublisher" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<p>Postman collection generator for Socrata datasets.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dartfx.postman.socrata.SocrataPostmanPublisher.config">
+<span class="sig-name descname"><span class="pre">config</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#dartfx.postman.socrata.SocrataPostmanPublisherConfig" title="dartfx.postman.socrata.SocrataPostmanPublisherConfig"><span class="pre">SocrataPostmanPublisherConfig</span></a></span><a class="headerlink" href="#dartfx.postman.socrata.SocrataPostmanPublisher.config" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dartfx.postman.socrata.SocrataPostmanPublisher.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'arbitrary_types_allowed':</span> <span class="pre">True}</span></span><a class="headerlink" href="#dartfx.postman.socrata.SocrataPostmanPublisher.model_config" title="Link to this definition"></a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dartfx.postman.socrata.SocrataPostmanPublisher.postman_api">
+<span class="sig-name descname"><span class="pre">postman_api</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">PostmanApi</span></span><a class="headerlink" href="#dartfx.postman.socrata.SocrataPostmanPublisher.postman_api" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="dartfx.postman.socrata.SocrataPostmanPublisher.publish_dataset">
+<span class="sig-name descname"><span class="pre">publish_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">workspace_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">collection_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#dartfx.postman.socrata.SocrataPostmanPublisherConfig" title="dartfx.postman.socrata.SocrataPostmanPublisherConfig"><span class="pre">SocrataPostmanPublisherConfig</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#dartfx.postman.socrata.SocrataPostmanPublisher.publish_dataset" title="Link to this definition"></a></dt>
+<dd><p>Publish a dataset as a collection under an existing workspace.</p>
+<p>If collection_id is specified, its content will be replaced (but the collection id remains the same).
+Otherwise, workspace_id must be specified and a new collection will be created.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dartfx.postman.socrata.SocrataPostmanPublisher.server">
+<span class="sig-name descname"><span class="pre">server</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">SocrataServer</span></span><a class="headerlink" href="#dartfx.postman.socrata.SocrataPostmanPublisher.server" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="dartfx.postman.socrata.SocrataPostmanPublisherConfig">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">dartfx.postman.socrata.</span></span><span class="sig-name descname"><span class="pre">SocrataPostmanPublisherConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="keyword-only-separator o"><abbr title="Keyword-only parameters separator (PEP 3102)"><span class="pre">*</span></abbr></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_prefix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name_suffix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#dartfx.postman.socrata.SocrataPostmanPublisherConfig" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">BaseModel</span></code></p>
+<p>Configuration for SocrataPostmanPublisher.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dartfx.postman.socrata.SocrataPostmanPublisherConfig.model_config">
+<span class="sig-name descname"><span class="pre">model_config</span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{}</span></span><a class="headerlink" href="#dartfx.postman.socrata.SocrataPostmanPublisherConfig.model_config" title="Link to this definition"></a></dt>
+<dd><p>Configuration for the model, should be a dictionary conforming to [<cite>ConfigDict</cite>][pydantic.config.ConfigDict].</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dartfx.postman.socrata.SocrataPostmanPublisherConfig.name_prefix">
+<span class="sig-name descname"><span class="pre">name_prefix</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#dartfx.postman.socrata.SocrataPostmanPublisherConfig.name_prefix" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="dartfx.postman.socrata.SocrataPostmanPublisherConfig.name_suffix">
+<span class="sig-name descname"><span class="pre">name_suffix</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><a class="headerlink" href="#dartfx.postman.socrata.SocrataPostmanPublisherConfig.name_suffix" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Data Artifex Postman Toolkit" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Pascal Heus.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
