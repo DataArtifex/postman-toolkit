@@ -58,11 +58,29 @@ allow-direct-references = true
 [tool.hatch.version]
 path = "src/dartfx/postman/__about__.py"
 
+[dependency-groups]
+dev = [
+  "coverage[toml]>=6.5",
+  "pytest>=9",
+  "pytest-benchmark>=4.0.0",
+  "mypy>=1.0.0",
+  "python-dotenv>=1.0.0",
+  "ruff>=0.3.0",
+  "pre-commit>=3.0.0",
+  "notebook>=7.0",
+]
+docs = [
+  "sphinx>=7.0.0",
+  "sphinx-rtd-theme>=1.2.0",
+  "myst-parser>=1.0.0",
+  "sphinx-copybutton>=0.5.0",
+]
+
 [tool.hatch.envs.default]
 post-install-commands = []
 dependencies = [
   "coverage[toml]>=6.5",
-  "pytest>=8.0",
+  "pytest>=9",
   "notebook>=7.0",
 ]
 
@@ -79,7 +97,7 @@ cov = [
 ]
 
 [[tool.hatch.envs.all.matrix]]
-python = ["3.10", "3.11", "3.12"]
+python = ["3.12", "3.13"]
 
 [tool.hatch.envs.types]
 dependencies = [
@@ -88,6 +106,17 @@ dependencies = [
 
 [tool.hatch.envs.types.scripts]
 check = "mypy --install-types --non-interactive {args:src/dartfx/postman tests}"
+
+[tool.hatch.envs.docs]
+dependencies = [
+  "sphinx>=7.0.0",
+  "sphinx-rtd-theme>=1.2.0",
+  "myst-parser>=1.0.0",
+  "sphinx-copybutton>=0.5.0",
+]
+[tool.hatch.envs.docs.scripts]
+build = "sphinx-build -b html docs/source docs/build/html"
+serve = "python -m http.server -d docs/build/html"
 
 [tool.coverage.run]
 source_pkgs = ["dartfx/postman", "tests"]
@@ -107,4 +136,40 @@ exclude_lines = [
   "if __name__ == .__main__.:",
   "if TYPE_CHECKING:",
 ]
+
+[tool.pytest.ini_options]
+pythonpath = "src"
+testpaths = ["tests"]
+log_cli = true
+log_cli_level = "DEBUG"
+log_cli_format = "%(asctime)s [%(levelname)s] %(message)s (%(filename)s:%(lineno)s)"
+log_cli_date_format = "%Y-%m-%d %H:%M:%S"
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+src = ["src"]
+
+[tool.ruff.lint]
+select = [
+  "E",
+  "W",
+  "F",
+  "I",
+  "B",
+  "C4",
+  "UP",
+  "ARG",
+  "PT",
+]
+ignore = []
+
+[tool.ruff.lint.isort]
+known-first-party = ["dartfx"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
   
