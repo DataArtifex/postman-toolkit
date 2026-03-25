@@ -2,24 +2,23 @@
 Classes and helpers to publish Socrata data products to Postman collections.
 """
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
+from typing import Literal
 
-from . import templates
-from dartfx.postmanapi import postman
-from dartfx.postmanapi import postman_collection
+from dartfx.postmanapi import postman, postman_collection
 from dartfx.uscensus import (
-    UsCensusApi,
     UsCensusCatalog,
     UsCensusDataset,
-    UsCensusMicrodataDataset,
-    UsCensusAggregatedDataset,
 )
+
+from . import templates
+from ._postman_types import ensure_collection_info, ensure_request_url
 
 
 @dataclass
 class UsCensusPostmanPublisherConfig:
-    name_prefix: str = field(default=None)
-    name_suffix: str = field(default=None)
+    name_prefix: str | None = None
+    name_suffix: str | None = None
 
 
 class UsCensusPostmanPublisher:
@@ -31,14 +30,18 @@ class UsCensusPostmanPublisher:
         self,
         api: postman.PostmanApi,
         server: UsCensusCatalog,
-        config: UsCensusPostmanPublisherConfig = UsCensusPostmanPublisherConfig(),
+        config: UsCensusPostmanPublisherConfig | None = None,
     ):
         self._postman_api = api
         self._server = server
-        self._config = config
+        self._config = config or UsCensusPostmanPublisherConfig()
 
     def publish_dataset(
-        self, dataset_id: str, target_id: str, target_type="workspace", config: UsCensusPostmanPublisherConfig = None
+        self,
+        dataset_id: str,
+        target_id: str,
+        target_type: Literal["workspace", "collection"] = "workspace",
+        config: UsCensusPostmanPublisherConfig | None = None,
     ) -> str:
         """Publish a dataset as a collection under an existing workspace.
 
@@ -84,7 +87,7 @@ class UsCensusPostmanPublisher:
         collection_manager.description = description
 
         # collection level variables
-        collection_manager.set_variable("host", dataset.server.host)
+        collection_manager.set_variable("host", "api.census.gov")
         collection_manager.set_variable("baseUrl", "https://{{host}}")
 
         return collection_manager.id
@@ -95,52 +98,59 @@ class PostmanCollectionGenerator:
     config: UsCensusPostmanPublisherConfig
 
     def __init__(
-        self, dataset: UsCensusDataset, config: UsCensusPostmanPublisherConfig = UsCensusPostmanPublisherConfig()
+        self,
+        dataset: UsCensusDataset,
+        config: UsCensusPostmanPublisherConfig | None = None,
     ):
         self.dataset = dataset
-        self.config = config
+        self.config = config or UsCensusPostmanPublisherConfig()
 
     def _add_query_request_parameters(self, request: postman_collection.Request):
-        request.url.create_query_parameter(
+        request_url = ensure_request_url(request)
+        request_url.create_query_parameter(
             "$select",
-            description="The set of columns to be returned, similar to a SELECT in SQL. Default: All columns, equivalent to $select=*.",
+            description=(
+                "The set of columns to be returned, similar to a SELECT in SQL. "
+                "Default: All columns, equivalent to $select=*."
+            ),
             disabled=True,
         )
-        request.url.create_query_parameter(
+        request_url.create_query_parameter(
             "$where", None, "Filters the rows to be returned, similar to WHERE. No default value.", True
         )
-        request.url.create_query_parameter(
+        request_url.create_query_parameter(
             "$order",
             None,
             "Column to order results on, similar to ORDER BY in SQL. Default is unspecified order.",
             True,
         )
-        request.url.create_query_parameter(
+        request_url.create_query_parameter(
             "$group", None, "Column to group results on, similar to GROUP BY in SQL. Default is no grouping.", True
         )
-        request.url.create_query_parameter(
+        request_url.create_query_parameter(
             "$having",
             None,
             "Filters the rows that result from an aggregation, similar to HAVING. Default is no filter.",
             True,
         )
-        request.url.create_query_parameter(
+        request_url.create_query_parameter(
             "$limit", None, "Maximum number of results to return. Default is 1,000. Maximum is 50,000).", True
         )
-        request.url.create_query_parameter(
+        request_url.create_query_parameter(
             "$offset", None, "Offset count into the results to start at, used for paging. Default is 0.", True
         )
-        request.url.create_query_parameter(
+        request_url.create_query_parameter(
             "$q", None, "Performs a full text search for a value. Default is no search.", True
         )
-        request.url.create_query_parameter("$query", None, "A full SoQL query string, all as one parameter.", True)
-        request.url.create_query_parameter(
+        request_url.create_query_parameter("$query", None, "A full SoQL query string, all as one parameter.", True)
+        request_url.create_query_parameter(
             "$bom", None, "Prepends a UTF-8 Byte Order Mark to the beginning of CSV output. Default is False", True
         )
         return
 
     def generate(self) -> postman_collection.Collection:
         collection = postman_collection.Collection()
+        collection_info = ensure_collection_info(collection)
         dataset = self.dataset
         config = self.config
 
@@ -150,13 +160,13 @@ class PostmanCollectionGenerator:
             name = f"{config.name_prefix}{name}"
         if config.name_suffix:
             name = f"{name}{config.name_suffix}"
-        collection.info.name = name
+        collection_info.name = name
 
         # collection description
         description = ""
         if dataset.description:
             description = f"## Description\n{dataset.description}\n"
-        collection.info.description = description
+        collection_info.description = description
 
         # Metadata Folder
         metadata_folder = templates.get_metadata_folder()
@@ -186,17 +196,6 @@ class PostmanCollectionGenerator:
         # CODE FOLDER
         code_folder = templates.get_code_folder()
         collection.item.append(code_folder)
-
-        languages = [
-            {"name": "JQuery", "path": "jquery"},
-            {"name": "Python Pandas", "path": "python-pandas"},
-            {"name": "Powershell", "path": "powershell"},
-            {"name": "R Socrata", "path": "r-socrata"},
-            {"name": "SAS", "path": "sas"},
-            {"name": "SODA Ruby", "path": "soda-ruby"},
-            {"name": "SODA .NET", "path": "soda-dotnet"},
-            {"name": "Stata", "path": "stata"},
-        ]
 
         # for language in languages:
         #    item = postman_collection.Item()

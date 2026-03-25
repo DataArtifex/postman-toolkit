@@ -2,16 +2,15 @@
 Classes and helpers to publish Socrata data products to Postman collections.
 """
 
-import logging
-from typing import Optional
+import urllib.parse
+
 from pydantic import BaseModel, Field
 
-from . import templates
-from dartfx.postmanapi import postman
-from dartfx.postmanapi import postman_collection
-from dartfx.socrata import SocrataServer, SocrataDataset
+from dartfx.postmanapi import postman, postman_collection
+from dartfx.socrata import SocrataDataset, SocrataServer
 
-import urllib.parse
+from . import templates
+from ._postman_types import create_item_request, ensure_collection_info
 
 
 class SocrataPostmanPublisherConfig(BaseModel):
@@ -39,7 +38,7 @@ class SocrataPostmanPublisher(BaseModel):
         dataset_id: str,
         workspace_id: str | None = None,
         collection_id: str | None = None,
-        config: Optional[SocrataPostmanPublisherConfig] = None,
+        config: SocrataPostmanPublisherConfig | None = None,
     ) -> str:
         """Publish a dataset as a collection under an existing workspace.
 
@@ -82,7 +81,11 @@ class SocrataPostmanCollectionGenerator(BaseModel):
             request.url = postman_collection.URL()
         param = request.url.create_query_parameter(
             "$select",
-            description="The set of columns to be returned, similar to a SELECT in SQL. Default: All columns, equivalent to $select=* (which includes computed variables whose names start with @).",
+            description=(
+                "The set of columns to be returned, similar to a SELECT in SQL. "
+                "Default: All columns, equivalent to $select=* "
+                "(which includes computed variables whose names start with @)."
+            ),
             disabled=False,
         )
         param.value = ",".join(
@@ -123,6 +126,7 @@ class SocrataPostmanCollectionGenerator(BaseModel):
 
     def generate(self) -> postman_collection.Collection:
         collection = postman_collection.Collection()
+        collection_info = ensure_collection_info(collection)
         dataset = self.dataset
         config = self.config
         topic = f"Postman: {dataset.name} ({dataset.server.host})"
@@ -133,11 +137,11 @@ class SocrataPostmanCollectionGenerator(BaseModel):
             name = f"{config.name_prefix}{name}"
         if config.name_suffix:
             name = f"{name}{config.name_suffix}"
-        collection.info.name = name
+        collection_info.name = name
 
         # collection description
 
-        collection.info.description = templates.get_collection_description(
+        collection_info.description = templates.get_collection_description(
             markdown=dataset.get_markdown(), topic=urllib.parse.quote(f"{topic} [collection]")
         )
 
@@ -181,14 +185,14 @@ class SocrataPostmanCollectionGenerator(BaseModel):
         # Query Data Request (JSON)
         item = postman_collection.Item()
         item.name = "Query Data (JSON)"
-        item.request = item.create_request(f"https://{dataset.server.host}/resource/{dataset.id}.json")
+        item.request = create_item_request(item, f"https://{dataset.server.host}/resource/{dataset.id}.json")
         self._add_query_request_parameters(item.request)
         data_folder.item.append(item)
 
         # Query Data Request (CSV)
         item = postman_collection.Item()
         item.name = "Query Data (CSV)"
-        item.request = item.create_request(f"https://{dataset.server.host}/resource/{dataset.id}.csv")
+        item.request = create_item_request(item, f"https://{dataset.server.host}/resource/{dataset.id}.csv")
         self._add_query_request_parameters(item.request)
         data_folder.item.append(item)
 
@@ -210,8 +214,8 @@ class SocrataPostmanCollectionGenerator(BaseModel):
         for language in languages:
             item = postman_collection.Item()
             item.name = language["name"]
-            item.create_request(f"{hvdnet_base_url}/generate/{language['path']}")
-            self._add_query_request_parameters(item.request)
+            request = create_item_request(item, f"{hvdnet_base_url}/generate/{language['path']}")
+            self._add_query_request_parameters(request)
             code_folder.item.append(item)
 
         # SQL FOLDER

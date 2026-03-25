@@ -1,16 +1,19 @@
 import os
-from dartfx.mtnards import MtnaRdsDataProduct
-from dartfx.postmanapi import postman
-from dartfx.postmanapi import postman_collection
-from dartfx.socrata import SocrataServer
-from datetime import datetime
-from jinja2 import Environment, FileSystemLoader
 import urllib.parse
+from datetime import datetime
+
+from jinja2 import Environment, FileSystemLoader
+
+from dartfx.mtnards import MtnaRdsDataProduct
+from dartfx.postmanapi import postman, postman_collection
+from dartfx.socrata import SocrataServer
+
+from .._postman_types import create_item_request, ensure_item_request, ensure_request_url
 
 TEMPLATES_DIR = os.getenv("DARTFX_POSTMAN_JINJA_TEMPLATES_DIR", os.path.dirname(os.path.abspath(__file__)))
 
 jinja_env = Environment(loader=FileSystemLoader(TEMPLATES_DIR))
-jinja_env.filters["now"] = lambda dummy: datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+jinja_env.filters["now"] = lambda _dummy: datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 
 def get_code_folder(**kwargs) -> postman_collection.ItemGroup:
@@ -41,12 +44,12 @@ def get_hvdnet_croissant_request(base_url, format=None, **kwargs) -> postman_col
     item.name = "Croissant"
     if format:
         item.name += f" ({format})"
-    item.create_request(f"{base_url}/croissant")
-    item.request.url.create_query_parameter(
+    request = create_item_request(item, f"{base_url}/croissant")
+    ensure_request_url(request).create_query_parameter(
         "format", value=format, description="The serialization format.", disabled=format is None
-    )  # type: ignore
+    )
     template = jinja_env.get_template("metadata_croissant_request.md.j2")
-    item.request.description = template.render(**kwargs)
+    request.description = template.render(**kwargs)
     return item
 
 
@@ -56,12 +59,12 @@ def get_hvdnet_dcat_request(base_url, format=None, **kwargs) -> postman_collecti
     item.name = "DCAT W3C"
     if format:
         item.name += f" ({format})"
-    item.create_request(f"{base_url}/dcat")
-    item.request.url.create_query_parameter(
+    request = create_item_request(item, f"{base_url}/dcat")
+    ensure_request_url(request).create_query_parameter(
         "format", value=format, description="The serialization format.", disabled=format is None
-    )  # type: ignore
+    )
     template = jinja_env.get_template("metadata_dcat_request.md.j2")
-    item.request.description = template.render(**kwargs)
+    request.description = template.render(**kwargs)
     return item
 
 
@@ -69,9 +72,9 @@ def get_hvdnet_ddi_codebook_request(base_url, **kwargs) -> postman_collection.It
     # DDI-Codebook request
     item = postman_collection.Item()
     item.name = "DDI-Codebook"
-    item.create_request(f"{base_url}/ddi/codebook")
+    request = create_item_request(item, f"{base_url}/ddi/codebook")
     template = jinja_env.get_template("metadata_ddi-c_request.md.j2")
-    item.request.description = template.render(**kwargs)
+    request.description = template.render(**kwargs)
     return item
 
 
@@ -81,12 +84,12 @@ def get_hvdnet_ddi_cdif_request(base_url, format=None, **kwargs) -> postman_coll
     item.name = "DDI-CDI CDIF"
     if format:
         item.name += f" ({format})"
-    item.create_request(f"{base_url}/ddi/cdif")
-    item.request.url.create_query_parameter(
+    request = create_item_request(item, f"{base_url}/ddi/cdif")
+    ensure_request_url(request).create_query_parameter(
         "format", value=format, description="The serialization format.", disabled=format is None
-    )  # type: ignore
+    )
     template = jinja_env.get_template("metadata_ddi-cdif_request.md.j2")
-    item.request.description = template.render(**kwargs)
+    request.description = template.render(**kwargs)
     return item
 
 
@@ -94,9 +97,9 @@ def get_hvdnet_mtnards_request(base_url, **kwargs) -> postman_collection.Item:
     # MTNA RDS request
     item = postman_collection.Item()
     item.name = "MTNA RDS"
-    item.create_request(f"{base_url}/mtnards")
+    request = create_item_request(item, f"{base_url}/mtnards")
     template = jinja_env.get_template("metadata_mtnards_request.md.j2")
-    item.request.description = template.render(**kwargs)
+    request.description = template.render(**kwargs)
     return item
 
 
@@ -104,9 +107,9 @@ def get_hvdnet_socrata_request(base_url, **kwargs) -> postman_collection.Item:
     # Socrata request
     item = postman_collection.Item()
     item.name = "Socrata"
-    item.create_request(f"{base_url}/socrata")
+    request = create_item_request(item, f"{base_url}/socrata")
     template = jinja_env.get_template("metadata_socrata_request.md.j2")
-    item.request.description = template.render(**kwargs)
+    request.description = template.render(**kwargs)
     return item
 
 
@@ -122,9 +125,9 @@ def get_markdown_request(base_url, **kwargs) -> postman_collection.Item:
     # Markdown request
     item = postman_collection.Item()
     item.name = "Markdown"
-    item.create_request(f"{base_url}/markdown")
+    request = create_item_request(item, f"{base_url}/markdown")
     template = jinja_env.get_template("metadata_markdown_request.md.j2")
-    item.request.description = template.render(**kwargs)
+    request.description = template.render(**kwargs)
     template = jinja_env.get_template("metadata_markdown_request_visualizer.js.j2")
     item.add_test_script(template.render(**kwargs))
     return item
@@ -149,27 +152,27 @@ def get_mtnards_metadata_folder(**kwargs) -> postman_collection.ItemGroup:
 def get_mtnards_regression_request(data_product: MtnaRdsDataProduct, **kwargs) -> postman_collection.Item:
     item = postman_collection.Item()
     item.name = "Run regression (bivariate)"
-    item.request = item.create_request(f"{data_product.tabulate_api_url}")
+    item.request = create_item_request(item, f"{data_product.tabulate_api_url}")
     template = jinja_env.get_template("mtnards_tabulate_request.md.j2")
-    item.request.description = template.render(**kwargs)
+    ensure_item_request(item).description = template.render(**kwargs)
     return item
 
 
 def get_mtnards_select_request(data_product: MtnaRdsDataProduct, **kwargs) -> postman_collection.Item:
     item = postman_collection.Item()
     item.name = "Select records"
-    item.request = item.create_request(f"{data_product.select_api_url}")
+    item.request = create_item_request(item, f"{data_product.select_api_url}")
     template = jinja_env.get_template("mtnards_select_request.md.j2")
-    item.request.description = template.render(**kwargs)
+    ensure_item_request(item).description = template.render(**kwargs)
     return item
 
 
 def get_mtnards_tabulate_request(data_product: MtnaRdsDataProduct, **kwargs) -> postman_collection.Item:
     item = postman_collection.Item()
     item.name = "Create table"
-    item.request = item.create_request(f"{data_product.tabulate_api_url}")
+    item.request = create_item_request(item, f"{data_product.tabulate_api_url}")
     template = jinja_env.get_template("mtnards_tabulate_request.md.j2")
-    item.request.description = template.render(**kwargs)
+    ensure_item_request(item).description = template.render(**kwargs)
     return item
 
 

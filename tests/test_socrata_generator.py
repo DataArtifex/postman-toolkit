@@ -1,8 +1,9 @@
 import json
-from dartfx.socrata import SocrataDataset
-from dartfx.postman.templates import initialize_socrata_workspace
-from dartfx.postman.socrata import SocrataPostmanCollectionGenerator
 import os
+
+from dartfx.postman.socrata import SocrataPostmanCollectionGenerator
+from dartfx.postman.templates import initialize_socrata_workspace
+from dartfx.socrata import SocrataDataset
 
 
 def test_init_workspace(socrata_sfo_server, postman_api):

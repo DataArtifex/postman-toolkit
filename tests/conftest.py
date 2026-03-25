@@ -1,7 +1,8 @@
-from dotenv import load_dotenv
-from pathlib import Path
 import os
+from pathlib import Path
+
 import pytest
+from dotenv import load_dotenv
 
 from dartfx.postmanapi import postman
 from dartfx.socrata import SocrataServer

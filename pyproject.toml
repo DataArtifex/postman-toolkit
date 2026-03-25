@@ -107,6 +107,12 @@ dependencies = [
 [tool.hatch.envs.types.scripts]
 check = "mypy --install-types --non-interactive {args:src/dartfx/postman tests}"
 
+[tool.mypy]
+python_version = "3.12"
+mypy_path = ["src"]
+namespace_packages = true
+explicit_package_bases = true
+
 [tool.hatch.envs.docs]
 dependencies = [
   "sphinx>=7.0.0",
