@@ -27,9 +27,9 @@ dependencies = [
   "dartfx-socrata @ git+https://github.com/DataArtifex/socrata-toolkit.git",
   "dartfx-uscensus @ git+https://github.com/DataArtifex/uscensus-toolkit.git",
   "frictionless>=5.18.0",
-  "jinja2>=3",
-  "pydantic>=2",
-  "requests>2.32.0"
+  "jinja2>=3.1.5",
+  "pydantic>=2.10.0",
+  "requests>=2.32.0"
 ]
 
 [project.urls]
@@ -46,7 +46,7 @@ exclude = [
 [tool.hatch.build.targets.wheel]
 packages = ["src/dartfx"]
 
-[tool.hatch.build] 
+[tool.hatch.build]
 # Include Jinja2 templates
 include = [
   "src/dartfx/templates/**/*.j2"
@@ -60,28 +60,26 @@ path = "src/dartfx/postman/__about__.py"
 
 [dependency-groups]
 dev = [
-  "coverage[toml]>=6.5",
+  "coverage[toml]>=7.0.0",
   "pytest>=9",
-  "pytest-benchmark>=4.0.0",
+  "pytest-benchmark>=5.0.0",
   "mypy>=1.0.0",
   "python-dotenv>=1.0.0",
   "ruff>=0.3.0",
-  "pre-commit>=3.0.0",
+  "pre-commit>=4.0.0",
   "notebook>=7.0",
 ]
 docs = [
-  "sphinx>=7.0.0",
-  "sphinx-rtd-theme>=1.2.0",
-  "myst-parser>=1.0.0",
-  "sphinx-copybutton>=0.5.0",
+  "sphinx>=9.0.0",
+  "sphinx-rtd-theme>=3.0.0",
+  "myst-parser>=5.0.0",
+  "sphinx-copybutton>=0.5.2",
 ]
 
 [tool.hatch.envs.default]
 post-install-commands = []
 dependencies = [
-  "coverage[toml]>=6.5",
-  "pytest>=9",
-  "notebook>=7.0",
+  "dev"
 ]
 
 [tool.hatch.envs.default.scripts]
@@ -101,7 +99,7 @@ python = ["3.12", "3.13"]
 
 [tool.hatch.envs.types]
 dependencies = [
-  "mypy>=1.0.0",
+  "dev"
 ]
 
 [tool.hatch.envs.types.scripts]
@@ -109,16 +107,16 @@ check = "mypy --install-types --non-interactive {args:src/dartfx/postman tests}"
 
 [tool.mypy]
 python_version = "3.12"
-mypy_path = ["src"]
-namespace_packages = true
+check_untyped_defs = true
+ignore_missing_imports = true
+warn_unused_ignores = true
+show_error_codes = true
+mypy_path = "src"
 explicit_package_bases = true
 
 [tool.hatch.envs.docs]
 dependencies = [
-  "sphinx>=7.0.0",
-  "sphinx-rtd-theme>=1.2.0",
-  "myst-parser>=1.0.0",
-  "sphinx-copybutton>=0.5.0",
+  "docs"
 ]
 [tool.hatch.envs.docs.scripts]
 build = "sphinx-build -b html docs/source docs/build/html"
@@ -178,4 +176,3 @@ quote-style = "double"
 indent-style = "space"
 skip-magic-trailing-comma = false
 line-ending = "auto"
-  
