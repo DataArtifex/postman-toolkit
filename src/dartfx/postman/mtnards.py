@@ -24,8 +24,7 @@ GROUPBY_DESCRIPTION = (
     "parameter can specify which columns to group by."
 )
 ORDERBY_DESCRIPTION = (
-    "Allows the data to be reordered in ascending or descending order by column. "
-    "Example: orderby=V1 DESC,V2 ASC."
+    "Allows the data to be reordered in ascending or descending order by column. Example: orderby=V1 DESC,V2 ASC."
 )
 WHERE_DESCRIPTION = (
     "The where parameter allows filters to be applied to the data that will be returned. "
@@ -173,9 +172,7 @@ class MtnaRdsPostmanPublisher(BaseModel):
     def _add_regression_request_parameters(self, item: postman_collection.Item):
         request_url = ensure_request_url(ensure_item_request(item))
         request_url.create_query_parameter("dependent", None, "Required. The ID of the dependent variable.", False)
-        request_url.create_query_parameter(
-            "independent", None, "Required. The ID of the independent variable.", False
-        )
+        request_url.create_query_parameter("independent", None, "Required. The ID of the independent variable.", False)
         request_url.create_query_parameter(
             "count", "1", "Flag specifying whether the total row count should be returned along side the data.", True
         )
@@ -351,6 +348,7 @@ class MtnaRdsPostmanPublisher(BaseModel):
         else:
             raise ValueError("Either a collection_id or workspace_id must be specified")
 
+        assert collection_id is not None
         return collection_id
 
     def _publish_data_product_in_item(

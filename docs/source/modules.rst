@@ -19,5 +19,3 @@ Socrata
    :members:
    :undoc-members:
    :show-inheritance:
-
-   

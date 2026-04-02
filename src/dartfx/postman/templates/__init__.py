@@ -1,12 +1,13 @@
 import os
 import urllib.parse
 from datetime import datetime
+from typing import Any
 
 from jinja2 import Environment, FileSystemLoader
 
 from dartfx.mtnards import MtnaRdsDataProduct
 from dartfx.postmanapi import postman, postman_collection
-from dartfx.socrata import SocrataServer
+from dartfx.socrata.socrata import SocrataServer
 
 from .._postman_types import create_item_request, ensure_item_request, ensure_request_url
 
@@ -16,7 +17,7 @@ jinja_env = Environment(loader=FileSystemLoader(TEMPLATES_DIR))
 jinja_env.filters["now"] = lambda _dummy: datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 
-def get_code_folder(**kwargs) -> postman_collection.ItemGroup:
+def get_code_folder(**kwargs: Any) -> postman_collection.ItemGroup:
     folder = postman_collection.ItemGroup()
     folder.name = "Code Generators"
     template = jinja_env.get_template("code_folder.md.j2")
@@ -24,13 +25,13 @@ def get_code_folder(**kwargs) -> postman_collection.ItemGroup:
     return folder
 
 
-def get_collection_description(markdown, **kwargs) -> str:
+def get_collection_description(markdown: str, **kwargs: Any) -> str:
     template = jinja_env.get_template("collection_description.md.j2")
     description = template.render(markdown=markdown, **kwargs)
     return description
 
 
-def get_data_folder(platform: str | None = None, **kwargs) -> postman_collection.ItemGroup:
+def get_data_folder(platform: str | None = None, **kwargs: Any) -> postman_collection.ItemGroup:
     folder = postman_collection.ItemGroup()
     folder.name = "Data"
     template = jinja_env.get_template("data_folder.md.j2")
@@ -38,7 +39,7 @@ def get_data_folder(platform: str | None = None, **kwargs) -> postman_collection
     return folder
 
 
-def get_hvdnet_croissant_request(base_url, format=None, **kwargs) -> postman_collection.Item:
+def get_hvdnet_croissant_request(base_url: str, format: str | None = None, **kwargs: Any) -> postman_collection.Item:
     # Croissant request
     item = postman_collection.Item()
     item.name = "Croissant"
@@ -53,7 +54,7 @@ def get_hvdnet_croissant_request(base_url, format=None, **kwargs) -> postman_col
     return item
 
 
-def get_hvdnet_dcat_request(base_url, format=None, **kwargs) -> postman_collection.Item:
+def get_hvdnet_dcat_request(base_url: str, format: str | None = None, **kwargs: Any) -> postman_collection.Item:
     # DCAT request
     item = postman_collection.Item()
     item.name = "DCAT W3C"
@@ -68,7 +69,7 @@ def get_hvdnet_dcat_request(base_url, format=None, **kwargs) -> postman_collecti
     return item
 
 
-def get_hvdnet_ddi_codebook_request(base_url, **kwargs) -> postman_collection.Item:
+def get_hvdnet_ddi_codebook_request(base_url: str, **kwargs: Any) -> postman_collection.Item:
     # DDI-Codebook request
     item = postman_collection.Item()
     item.name = "DDI-Codebook"
@@ -78,7 +79,7 @@ def get_hvdnet_ddi_codebook_request(base_url, **kwargs) -> postman_collection.It
     return item
 
 
-def get_hvdnet_ddi_cdif_request(base_url, format=None, **kwargs) -> postman_collection.Item:
+def get_hvdnet_ddi_cdif_request(base_url: str, format: str | None = None, **kwargs: Any) -> postman_collection.Item:
     # DDI-CDI CDIF request
     item = postman_collection.Item()
     item.name = "DDI-CDI CDIF"
@@ -93,7 +94,7 @@ def get_hvdnet_ddi_cdif_request(base_url, format=None, **kwargs) -> postman_coll
     return item
 
 
-def get_hvdnet_mtnards_request(base_url, **kwargs) -> postman_collection.Item:
+def get_hvdnet_mtnards_request(base_url: str, **kwargs: Any) -> postman_collection.Item:
     # MTNA RDS request
     item = postman_collection.Item()
     item.name = "MTNA RDS"
@@ -103,7 +104,7 @@ def get_hvdnet_mtnards_request(base_url, **kwargs) -> postman_collection.Item:
     return item
 
 
-def get_hvdnet_socrata_request(base_url, **kwargs) -> postman_collection.Item:
+def get_hvdnet_socrata_request(base_url: str, **kwargs: Any) -> postman_collection.Item:
     # Socrata request
     item = postman_collection.Item()
     item.name = "Socrata"
@@ -113,7 +114,7 @@ def get_hvdnet_socrata_request(base_url, **kwargs) -> postman_collection.Item:
     return item
 
 
-def get_metadata_folder(**kwargs) -> postman_collection.ItemGroup:
+def get_metadata_folder(**kwargs: Any) -> postman_collection.ItemGroup:
     folder = postman_collection.ItemGroup()
     folder.name = "Metadata"
     template = jinja_env.get_template("metadata_folder.md.j2")
@@ -121,7 +122,7 @@ def get_metadata_folder(**kwargs) -> postman_collection.ItemGroup:
     return folder
 
 
-def get_markdown_request(base_url, **kwargs) -> postman_collection.Item:
+def get_markdown_request(base_url: str, **kwargs: Any) -> postman_collection.Item:
     # Markdown request
     item = postman_collection.Item()
     item.name = "Markdown"
@@ -133,7 +134,7 @@ def get_markdown_request(base_url, **kwargs) -> postman_collection.Item:
     return item
 
 
-def get_mtnards_collection_folder(markdown: str, **kwargs) -> postman_collection.ItemGroup:
+def get_mtnards_collection_folder(markdown: str, **kwargs: Any) -> postman_collection.ItemGroup:
     folder = postman_collection.ItemGroup()
     folder.name = "MTNA RDS Postman"
     template = jinja_env.get_template("mtnards_collection_folder.md.j2")
@@ -141,7 +142,7 @@ def get_mtnards_collection_folder(markdown: str, **kwargs) -> postman_collection
     return folder
 
 
-def get_mtnards_metadata_folder(**kwargs) -> postman_collection.ItemGroup:
+def get_mtnards_metadata_folder(**kwargs: Any) -> postman_collection.ItemGroup:
     folder = postman_collection.ItemGroup()
     folder.name = "Metadata (MTNA RDS)"
     template = jinja_env.get_template("mtnards_metadata_folder.md.j2")
@@ -149,7 +150,7 @@ def get_mtnards_metadata_folder(**kwargs) -> postman_collection.ItemGroup:
     return folder
 
 
-def get_mtnards_regression_request(data_product: MtnaRdsDataProduct, **kwargs) -> postman_collection.Item:
+def get_mtnards_regression_request(data_product: MtnaRdsDataProduct, **kwargs: Any) -> postman_collection.Item:
     item = postman_collection.Item()
     item.name = "Run regression (bivariate)"
     item.request = create_item_request(item, f"{data_product.tabulate_api_url}")
@@ -158,7 +159,7 @@ def get_mtnards_regression_request(data_product: MtnaRdsDataProduct, **kwargs) -
     return item
 
 
-def get_mtnards_select_request(data_product: MtnaRdsDataProduct, **kwargs) -> postman_collection.Item:
+def get_mtnards_select_request(data_product: MtnaRdsDataProduct, **kwargs: Any) -> postman_collection.Item:
     item = postman_collection.Item()
     item.name = "Select records"
     item.request = create_item_request(item, f"{data_product.select_api_url}")
@@ -167,7 +168,7 @@ def get_mtnards_select_request(data_product: MtnaRdsDataProduct, **kwargs) -> po
     return item
 
 
-def get_mtnards_tabulate_request(data_product: MtnaRdsDataProduct, **kwargs) -> postman_collection.Item:
+def get_mtnards_tabulate_request(data_product: MtnaRdsDataProduct, **kwargs: Any) -> postman_collection.Item:
     item = postman_collection.Item()
     item.name = "Create table"
     item.request = create_item_request(item, f"{data_product.tabulate_api_url}")
@@ -176,7 +177,7 @@ def get_mtnards_tabulate_request(data_product: MtnaRdsDataProduct, **kwargs) -> 
     return item
 
 
-def get_sql_folder(**kwargs) -> postman_collection.ItemGroup:
+def get_sql_folder(**kwargs: Any) -> postman_collection.ItemGroup:
     folder = postman_collection.ItemGroup()
     folder.name = "SQL"
     template = jinja_env.get_template("sql_folder.md.j2")
@@ -184,7 +185,7 @@ def get_sql_folder(**kwargs) -> postman_collection.ItemGroup:
     return folder
 
 
-def get_ai_folder(**kwargs) -> postman_collection.ItemGroup:
+def get_ai_folder(**kwargs: Any) -> postman_collection.ItemGroup:
     folder = postman_collection.ItemGroup()
     folder.name = "AI"
     template = jinja_env.get_template("ai_folder.md.j2")
@@ -192,7 +193,7 @@ def get_ai_folder(**kwargs) -> postman_collection.ItemGroup:
     return folder
 
 
-def get_visualization_folder(**kwargs) -> postman_collection.ItemGroup:
+def get_visualization_folder(**kwargs: Any) -> postman_collection.ItemGroup:
     folder = postman_collection.ItemGroup()
     folder.name = "Visualization"
     template = jinja_env.get_template("visualization_folder.md.j2")

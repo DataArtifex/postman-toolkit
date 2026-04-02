@@ -7,7 +7,7 @@ import urllib.parse
 from pydantic import BaseModel, Field
 
 from dartfx.postmanapi import postman, postman_collection
-from dartfx.socrata import SocrataDataset, SocrataServer
+from dartfx.socrata.socrata import SocrataDataset, SocrataServer
 
 from . import templates
 from ._postman_types import create_item_request, ensure_collection_info
@@ -60,22 +60,22 @@ class SocrataPostmanPublisher(BaseModel):
         # instantiate collection manager
         if collection_id:
             # replace existing collection
-            collection_id = self.postman_api.replace_collection(collection_id, generated_collection_data)
+            published_collection_id = self.postman_api.replace_collection(collection_id, generated_collection_data)
         elif workspace_id:
             # create a new collection or replace if same name already exists
             workspace_manager = postman.WorkspaceManager(self.postman_api, workspace_id)
-            collection_id = workspace_manager.import_collection(generated_collection_data, replace=True)
+            published_collection_id = workspace_manager.import_collection(generated_collection_data, replace=True)
         else:
             raise ValueError("Either a collection_id or workspace_id must be specified")
 
-        return collection_id
+        return published_collection_id
 
 
 class SocrataPostmanCollectionGenerator(BaseModel):
     dataset: SocrataDataset
     config: SocrataPostmanPublisherConfig = Field(default=SocrataPostmanPublisherConfig())
 
-    def _add_query_request_parameters(self, request: postman_collection.Request):
+    def _add_query_request_parameters(self, request: postman_collection.Request) -> None:
         """Add query parameters that are common to all Socrata data requests."""
         if request.url is None or isinstance(request.url, str):
             request.url = postman_collection.URL()
@@ -122,7 +122,6 @@ class SocrataPostmanCollectionGenerator(BaseModel):
         request.url.create_query_parameter(
             "$bom", None, "Prepends a UTF-8 Byte Order Mark to the beginning of CSV output. Default is False", True
         )
-        return
 
     def generate(self) -> postman_collection.Collection:
         collection = postman_collection.Collection()
